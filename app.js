@@ -35,7 +35,7 @@ function installApp() {
     }
 }
 
-// Service Worker Registration for Offline Use
+// Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js?v=1', { scope: './' })
@@ -45,6 +45,8 @@ if ('serviceWorker' in navigator) {
 }
 
 let activeRow = 1;
+let currentFileOwner = "";
+let isReadOnlyMode = false;
 
 let tapCount = 0;
 let tapTimer = null;
@@ -91,11 +93,10 @@ function renderLedgerTableRows() {
 }
 
 function handleKeyClick() {
+    if (isReadOnlyMode) return;
     tapCount++;
     clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => {
-        tapCount = 0;
-    }, 1000);
+    tapTimer = setTimeout(() => { tapCount = 0; }, 1000);
 
     if (tapCount >= 5) {
         tapCount = 0;
@@ -110,17 +111,16 @@ function toggleLockState(locked) {
 
     const nameInputs = document.querySelectorAll(".name-input");
     nameInputs.forEach(field => {
-        field.readOnly = locked;
-        field.style.backgroundColor = locked ? "#e5e7eb" : "white";
+        field.readOnly = locked || isReadOnlyMode;
+        field.style.backgroundColor = (locked || isReadOnlyMode) ? "#e5e7eb" : "white";
     });
 }
 
 function handlePriceKeyClick() {
+    if (isReadOnlyMode) return;
     priceTapCount++;
     clearTimeout(priceTapTimer);
-    priceTapTimer = setTimeout(() => {
-        priceTapCount = 0;
-    }, 1000);
+    priceTapTimer = setTimeout(() => { priceTapCount = 0; }, 1000);
 
     if (priceTapCount >= 5) {
         priceTapCount = 0;
@@ -135,8 +135,8 @@ function togglePriceLockState(locked) {
 
     const priceInputs = document.querySelectorAll(".price-input");
     priceInputs.forEach(field => {
-        field.readOnly = locked;
-        field.style.backgroundColor = locked ? "#e5e7eb" : "white";
+        field.readOnly = locked || isReadOnlyMode;
+        field.style.backgroundColor = (locked || isReadOnlyMode) ? "#e5e7eb" : "white";
     });
 }
 
@@ -164,6 +164,7 @@ function updateActiveCustomerName(row) {
 }
 
 function syncFromPanel(type) {
+    if (isReadOnlyMode) return;
     const val = document.getElementById("sync" + type).value;
     const targetId = type === "Dry" ? "qtyReg" : "qty" + type;
     document.getElementById(targetId).value = val;
@@ -171,6 +172,7 @@ function syncFromPanel(type) {
 }
 
 function syncFromTable(type) {
+    if (isReadOnlyMode) return;
     const targetId = type === "Reg" ? "syncDry" : "sync" + type;
     const val = document.getElementById("qty" + type).value;
     const syncInput = document.getElementById(targetId);
@@ -181,6 +183,7 @@ function syncFromTable(type) {
 }
 
 function clearMainInputs() {
+    if (isReadOnlyMode) return;
     document.getElementById("qtyReg").value = "";
     document.getElementById("syncDry").value = "";
     document.getElementById("qtyFresh").value = "";
@@ -338,6 +341,7 @@ function getCurrentLedgerSnapshot() {
 }
 
 function saveLedger() {
+    if (isReadOnlyMode) return;
     const ledgerData = getCurrentLedgerSnapshot();
     localStorage.setItem("miki_ledger_data", JSON.stringify(ledgerData));
 }
@@ -358,6 +362,32 @@ function applyLedgerData(ledgerData) {
     calculateLedgerTotals();
 }
 
+function setReadOnlyState(readOnly, owner = "") {
+    isReadOnlyMode = readOnly;
+    const banner = document.getElementById("readOnlyBanner");
+    const ownerDisplay = document.getElementById("savedOwnerDisplay");
+
+    if (banner && ownerDisplay) {
+        if (readOnly) {
+            ownerDisplay.textContent = owner;
+            banner.style.display = "block";
+        } else {
+            banner.style.display = "none";
+        }
+    }
+
+    const allInputs = document.querySelectorAll("input:not(.price-input):not(.name-input)");
+    allInputs.forEach(input => {
+        if (input.id !== "saveFileDate" && input.id !== "saveFileName" && input.id !== "saveSignature") {
+            input.readOnly = readOnly;
+            input.style.backgroundColor = readOnly ? "#f3f4f6" : "white";
+        }
+    });
+
+    toggleLockState(isLocked);
+    togglePriceLockState(isPriceLocked);
+}
+
 function loadLedger() {
     const saved = localStorage.getItem("miki_ledger_data");
     if (!saved) return;
@@ -365,19 +395,28 @@ function loadLedger() {
     applyLedgerData(ledgerData);
 }
 
-/* SAVING, FOLDER, DATE & TIME MANAGEMENT */
+/* SAVING, FOLDER, DATE, TIME & SIGNATURE MANAGEMENT */
 
 function getSavedFolderFiles() {
     const folder = localStorage.getItem("miki_folder_files");
     return folder ? JSON.parse(folder) : [];
 }
 
-function openFolderModal() {
-    const dateInput = document.getElementById("saveFileDate");
-    if (!dateInput.value) {
-        const today = new Date().toISOString().split("T")[0];
-        dateInput.value = today;
+// Sets calendar pop-up default to September 28, 2026 when tapped while blank
+function handleDateFocus(input) {
+    if (!input.value) {
+        input.value = "2026-09-28";
+        validateSaveForm();
     }
+}
+
+function openFolderModal() {
+    document.getElementById("saveFileDate").value = "";
+    
+    // Auto-fill last used signature for convenience
+    const lastSig = localStorage.getItem("miki_user_signature") || "";
+    document.getElementById("saveSignature").value = lastSig;
+
     validateSaveForm();
     renderFolderRecords();
     document.getElementById("folderModal").style.display = "flex";
@@ -390,9 +429,10 @@ function closeFolderModal() {
 function validateSaveForm() {
     const dateVal = document.getElementById("saveFileDate").value.trim();
     const nameVal = document.getElementById("saveFileName").value.trim();
+    const sigVal = document.getElementById("saveSignature").value.trim();
     const saveBtn = document.getElementById("saveFileBtn");
 
-    if (dateVal !== "" && nameVal !== "") {
+    if (dateVal !== "" && nameVal !== "" && sigVal !== "") {
         saveBtn.classList.add("active");
         saveBtn.disabled = false;
     } else {
@@ -404,34 +444,47 @@ function validateSaveForm() {
 function saveFileRecord() {
     const dateVal = document.getElementById("saveFileDate").value.trim();
     const nameVal = document.getElementById("saveFileName").value.trim();
+    const sigVal = document.getElementById("saveSignature").value.trim();
 
-    if (!dateVal || !nameVal) return;
+    if (!dateVal || !nameVal || !sigVal) return;
+
+    // Save current signature for future entries
+    localStorage.setItem("miki_user_signature", sigVal);
 
     let files = getSavedFolderFiles();
-    
     const existingIndex = files.findIndex(f => f.date === dateVal);
     
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
+
+    // Check ownership if overwriting
+    if (existingIndex >= 0) {
+        const existingOwner = files[existingIndex].signature || "";
+        if (existingOwner.toLowerCase() !== sigVal.toLowerCase()) {
+            alert(`Permission Denied: File for ${dateVal} was saved by "${existingOwner}". Only they can edit/overwrite it.`);
+            return;
+        }
+        if (!confirm(`Overwrite record for ${dateVal}?`)) {
+            return;
+        }
+    }
+
     const newRecord = {
         id: existingIndex >= 0 ? files[existingIndex].id : Date.now(),
         date: dateVal,
         time: timeStr,
         name: nameVal,
+        signature: sigVal,
         data: getCurrentLedgerSnapshot()
     };
 
     if (existingIndex >= 0) {
-        if (!confirm(`A record for ${dateVal} already exists. Do you want to overwrite it?`)) {
-            return;
-        }
         files[existingIndex] = newRecord;
     } else {
         files.push(newRecord);
     }
 
-    // Sort files chronologically: First comes first (Oldest date to Newest date)
+    // Sort files chronologically: First comes first
     files.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     // Limit archive to 30 files
@@ -441,7 +494,10 @@ function saveFileRecord() {
 
     localStorage.setItem("miki_folder_files", JSON.stringify(files));
     
-    alert(`File "${nameVal}" successfully saved for ${dateVal}!`);
+    currentFileOwner = sigVal;
+    setReadOnlyState(false);
+    
+    alert(`File "${nameVal}" successfully saved by ${sigVal}!`);
     renderFolderRecords();
 }
 
@@ -458,15 +514,18 @@ function renderFolderRecords() {
         return;
     }
 
+    const currentSig = (localStorage.getItem("miki_user_signature") || "").toLowerCase();
+
     files.forEach(file => {
+        const isOwner = (file.signature || "").toLowerCase() === currentSig;
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><strong>${file.date}</strong></td>
-            <td>${file.time}</td>
             <td style="text-align:left;">${file.name}</td>
+            <td>✍️ ${file.signature || "Unknown"}</td>
             <td>
                 <button class="load-file-btn" onclick="loadSavedFile(${file.id})">LOAD</button>
-                <button class="del-file-btn" onclick="deleteSavedFile(${file.id})">DEL</button>
+                ${isOwner ? `<button class="del-file-btn" onclick="deleteSavedFile(${file.id})">DEL</button>` : ''}
             </td>
         `;
         tbody.appendChild(row);
@@ -476,22 +535,46 @@ function renderFolderRecords() {
 function loadSavedFile(id) {
     const files = getSavedFolderFiles();
     const target = files.find(f => f.id === id);
-    if (target) {
-        if (confirm(`Load saved file "${target.name}" (${target.date})? Current inputs will be updated.`)) {
-            applyLedgerData(target.data);
-            saveLedger();
-            closeFolderModal();
-        }
+    if (!target) return;
+
+    const currentSig = prompt("Enter your Signature/Name to access this ledger:", localStorage.getItem("miki_user_signature") || "");
+    if (currentSig === null) return; // User canceled
+
+    localStorage.setItem("miki_user_signature", currentSig);
+
+    const isOwner = (target.signature || "").toLowerCase() === currentSig.trim().toLowerCase();
+
+    applyLedgerData(target.data);
+
+    if (isOwner) {
+        setReadOnlyState(false);
+        currentFileOwner = target.signature;
+        saveLedger();
+        alert(`Loaded "${target.name}". Edit mode active (Owner: ${target.signature}).`);
+    } else {
+        setReadOnlyState(true, target.signature);
+        alert(`Loaded "${target.name}" in READ-ONLY mode. Only ${target.signature} can edit this ledger.`);
     }
+
+    closeFolderModal();
 }
 
 function deleteSavedFile(id) {
     let files = getSavedFolderFiles();
     const target = files.find(f => f.id === id);
-    if (target && confirm(`Delete saved record for ${target.date} (${target.name})?`)) {
-        files = files.filter(f => f.id !== id);
-        localStorage.setItem("miki_folder_files", JSON.stringify(files));
-        renderFolderRecords();
+    const currentSig = (localStorage.getItem("miki_user_signature") || "").toLowerCase();
+
+    if (target) {
+        if ((target.signature || "").toLowerCase() !== currentSig) {
+            alert(`Permission Denied: Only ${target.signature} can delete this file.`);
+            return;
+        }
+
+        if (confirm(`Delete saved record for ${target.date} (${target.name})?`)) {
+            files = files.filter(f => f.id !== id);
+            localStorage.setItem("miki_folder_files", JSON.stringify(files));
+            renderFolderRecords();
+        }
     }
 }
 
