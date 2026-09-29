@@ -11,250 +11,250 @@
 
 <style>
 * {
-    box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    font-family: Arial, sans-serif;
-    background: #f3f4f6;
-    overscroll-behavior: none;
-    touch-action: pan-x pan-y;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
+    overscroll-behavior: none;
+    touch-action: pan-x pan-y;
 }
 
 .main-wrapper {
-    padding: 15px 10px;
-    width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
+    padding: 15px 10px;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
 }
 
 .table-box {
-    width: 100%;
-    margin: 0 auto 20px auto;
-    background: white;
-    border: 1px solid #d1d5db;
+    width: 100%;
+    margin: 0 auto 20px auto;
+    background: white;
+    border: 1px solid #d1d5db;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 th,
 td {
-    border: 1px solid #d1d5db;
-    height: 26px; 
-    padding: 2px 4px;
-    text-align: center;
-    vertical-align: middle;
+    border: 1px solid #d1d5db;
+    height: 26px; 
+    padding: 2px 4px;
+    text-align: center;
+    vertical-align: middle;
 }
 
 th {
-    background: #111827;
-    color: white;
-    font-size: 13px;
-    font-weight: bold;
+    background: #111827;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 td {
-    background: white;
-    font-size: 14px;
+    background: white;
+    font-size: 14px;
 }
 
 .miki {
-    text-align: left;
-    padding-left: 12px;
-    font-weight: bold;
+    text-align: left;
+    padding-left: 12px;
+    font-weight: bold;
 }
 
 .label-cell {
-    font-weight: bold;
-    text-align: center;
+    font-weight: bold;
+    text-align: center;
 }
 
 /* Dynamic Active Customer Display Box */
 .active-customer-box {
-    text-align: center;
-    font-weight: bold;
-    color: #1d4ed8;
-    font-size: 15px;
-    background: #eff6ff;
-    padding: 4px;
-    border-radius: 4px;
-    word-break: break-word;
+    text-align: center;
+    font-weight: bold;
+    color: #1d4ed8;
+    font-size: 15px;
+    background: #eff6ff;
+    padding: 4px;
+    border-radius: 4px;
+    word-break: break-word;
 }
 
 table input {
-    width: 100%;
-    max-width: 100%;
-    height: 22px;
-    padding: 2px;
-    border: 1px solid #9ca3af;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-    background: white;
+    width: 100%;
+    max-width: 100%;
+    height: 22px;
+    padding: 2px;
+    border: 1px solid #9ca3af;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    background: white;
 }
 
 /* TABLE 1 NET TOTAL LARGE FONT SPECIFIC STYLE */
 .miki-net-total-large {
-    font-size: 10px !important;
-    font-weight: bold;
-    color: #dc2626;
-    text-align: left;
-    padding-left: 12px;
+    font-size: 10px !important;
+    font-weight: bold;
+    color: #dc2626;
+    text-align: left;
+    padding-left: 12px;
 }
 
 .net-total-large {
-    font-size: 25px !important;
-    font-weight: bold;
-    color: #dc2626;
+    font-size: 25px !important;
+    font-weight: bold;
+    color: #dc2626;
 }
 
 /* TABLE 2 SPECIFIC STYLES */
 .table-box-2 td {
-    padding: 1px 2px;
+    padding: 1px 2px;
 }
 
 .table-box-2 table input {
-    font-size: 11px;
-    height: 24px;
-    padding: 1px 2px;
+    font-size: 11px;
+    height: 24px;
+    padding: 1px 2px;
 }
 
 .table-box-2 table input.name-input {
-    text-align: left;
-    padding-left: 4px;
+    text-align: left;
+    padding-left: 4px;
 }
 
 .table-box-2 table input.readonly-col {
-    background: #f9fafb;
-    border: none;
+    background: #f9fafb;
+    border: none;
 }
 
 /* HIGHLIGHT STYLES FOR COLL'N COLUMN */
 .colln-header {
-    background: #f59e0b !important; /* Bright amber header */
-    color: #000000 !important;
+    background: #f59e0b !important; /* Bright amber header */
+    color: #000000 !important;
 }
 
 .table-box-2 table input.colln-input {
-    background: #fef3c7 !important; /* Light yellow background */
-    border: 1px solid #f59e0b !important;
-    font-weight: bold;
+    background: #fef3c7 !important; /* Light yellow background */
+    border: 1px solid #f59e0b !important;
+    font-weight: bold;
 }
 
 .table-box-2 th, th.lockable-header {
-    font-size: 10px;
-    padding: 2px 1px;
-    cursor: pointer;
-    user-select: none;
+    font-size: 10px;
+    padding: 2px 1px;
+    cursor: pointer;
+    user-select: none;
 }
 
 .direct-amount-input {
-    width: 100% !important;
-    height: 24px !important;
-    font-weight: bold;
+    width: 100% !important;
+    height: 24px !important;
+    font-weight: bold;
 }
 
 table input:focus {
-    outline: 2px solid #94a3b8;
+    outline: 2px solid #94a3b8;
 }
 
 .amount {
-    font-weight: bold;
+    font-weight: bold;
 }
 
 .net-total-red {
-    font-weight: bold;
-    color: #dc2626;
-    font-size: 10px;
-    padding: 0 1px;
+    font-weight: bold;
+    color: #dc2626;
+    font-size: 10px;
+    padding: 0 1px;
 }
 
 .sync-panel {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr) 90px;
-    gap: 6px;
-    padding: 10px;
-    background: #111827;
-    border-top: 1px solid #d1d5db;
-    align-items: flex-end;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) 90px;
+    gap: 6px;
+    padding: 10px;
+    background: #111827;
+    border-top: 1px solid #d1d5db;
+    align-items: flex-end;
 }
 
 .sync-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .sync-cell label {
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: 4px;
-    text-transform: uppercase;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    text-transform: uppercase;
 }
 
 .sync-cell input {
-    width: 100%;
-    height: 32px;
-    padding: 4px;
-    border: 1px solid #9ca3af;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-    background: white;
+    width: 100%;
+    height: 32px;
+    padding: 4px;
+    border: 1px solid #9ca3af;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    background: white;
 }
 
 .btn-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .action-btn {
-    width: 100%;
-    height: 32px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
+    width: 100%;
+    height: 32px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .clear-btn {
-    background: #ef4444;
+    background: #ef4444;
 }
 .clear-btn:hover { background: #dc2626; }
 
 .install-btn {
-    background: #2563eb;
-    display: none;
+    background: #2563eb;
+    display: none;
 }
 .install-btn:hover { background: #1d4ed8; }
 
 @media (max-width: 400px) {
-    th, td {
-        height: 24px;
-        padding: 1px;
-    }
-    th {
-        font-size: 9px;
-    }
-    td {
-        font-size: 9.5px;
-    }
-    .table-box-2 table input {
-        font-size: 9.5px;
-    }
+    th, td {
+        height: 24px;
+        padding: 1px;
+    }
+    th {
+        font-size: 9px;
+    }
+    td {
+        font-size: 9.5px;
+    }
+    .table-box-2 table input {
+        font-size: 9.5px;
+    }
 }
 </style>
 </head>
@@ -262,164 +262,164 @@ table input:focus {
 <body>
 
 <div class="main-wrapper">
-    <!-- FIRST TABLE -->
-    <div class="table-box">
-    <table>
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th id="priceLockHeader" class="lockable-header" onclick="handlePriceKeyClick()" title="Tap 5 times to Lock/Unlock Prices">Price 🔒</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td class="miki">REG</td>
-            <td><input type="number" id="qtyReg" min="0" step="any" oninput="syncFromTable('Reg')"></td>
-            <td><input type="number" id="priceReg" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountReg">0</td>
-        </tr>
-        <tr>
-            <td class="miki">FRESH</td>
-            <td><input type="number" id="qtyFresh" min="0" step="any" oninput="syncFromTable('Fresh')"></td>
-            <td><input type="number" id="priceFresh" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountFresh">0</td>
-        </tr>
-        <tr>
-            <td class="miki">CAB</td>
-            <td><input type="number" id="qtyCab" min="0" step="any" oninput="syncFromTable('Cab')"></td>
-            <td><input type="number" id="priceCab" class="price-input" min="0" step="any" value="40" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountCab">0</td>
-        </tr>
-        <tr>
-            <td class="miki">BO</td>
-            <td><input type="number" id="qtyBo" min="0" step="any" oninput="syncFromTable('Bo')"></td>
-            <td><input type="number" id="priceBo" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountBo">0</td>
-        </tr>
-        <tr>
-            <td class="miki">TOTAL</td>
-            <td></td>
-            <td></td>
-            <td class="amount" id="totalAmount">0</td>
-        </tr>
-        <tr>
-            <td colspan="2" rowspan="2" id="activeCustomerDisplay" class="active-customer-box">
-                Row 1
-            </td>
-            <td class="label-cell">BAL</td>
-            <td><input type="number" id="inputBal" min="0" step="any" class="direct-amount-input" oninput="calculateMain()"></td>
-        </tr>
-        <tr>
-            <td class="label-cell">PAY</td>
-            <td><input type="number" id="inputPay" min="0" step="any" class="direct-amount-input" oninput="calculateMain()"></td>
-        </tr>
-        <tr>
-            <td class="miki-net-total-large">NET TOTAL</td>
-            <td></td>
-            <td></td>
-            <td class="net-total-large" id="netTotalAmount">0</td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- FIRST TABLE -->
+    <div class="table-box">
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th id="priceLockHeader" class="lockable-header" onclick="handlePriceKeyClick()" title="Tap 5 times to Lock/Unlock Prices">Price 🔒</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="miki">REG</td>
+            <td><input type="number" id="qtyReg" min="0" step="any" oninput="syncFromTable('Reg')"></td>
+            <td><input type="number" id="priceReg" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
+            <td class="amount" id="amountReg">0</td>
+        </tr>
+        <tr>
+            <td class="miki">FRESH</td>
+            <td><input type="number" id="qtyFresh" min="0" step="any" oninput="syncFromTable('Fresh')"></td>
+            <td><input type="number" id="priceFresh" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
+            <td class="amount" id="amountFresh">0</td>
+        </tr>
+        <tr>
+            <td class="miki">CAB</td>
+            <td><input type="number" id="qtyCab" min="0" step="any" oninput="syncFromTable('Cab')"></td>
+            <td><input type="number" id="priceCab" class="price-input" min="0" step="any" value="40" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
+            <td class="amount" id="amountCab">0</td>
+        </tr>
+        <tr>
+            <td class="miki">BO</td>
+            <td><input type="number" id="qtyBo" min="0" step="any" oninput="syncFromTable('Bo')"></td>
+            <td><input type="number" id="priceBo" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
+            <td class="amount" id="amountBo">0</td>
+        </tr>
+        <tr>
+            <td class="miki">TOTAL</td>
+            <td></td>
+            <td></td>
+            <td class="amount" id="totalAmount">0</td>
+        </tr>
+        <tr>
+            <td colspan="2" rowspan="2" id="activeCustomerDisplay" class="active-customer-box">
+                Row 1
+            </td>
+            <td class="label-cell">BAL</td>
+            <td><input type="number" id="inputBal" min="0" step="any" class="direct-amount-input" oninput="calculateMain()"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">PAY</td>
+            <td><input type="number" id="inputPay" min="0" step="any" class="direct-amount-input" oninput="calculateMain()"></td>
+        </tr>
+        <tr>
+            <td class="miki-net-total-large">NET TOTAL</td>
+            <td></td>
+            <td></td>
+            <td class="net-total-large" id="netTotalAmount">0</td>
+        </tr>
+        </tbody>
+    </table>
 
-        <div class="sync-panel">
-            <div class="sync-cell">
-                <label>Dry</label>
-                <input type="number" id="syncDry" min="0" step="any" oninput="syncFromPanel('Dry')">
-            </div>
-            <div class="sync-cell">
-                <label>Fresh</label>
-                <input type="number" id="syncFresh" min="0" step="any" oninput="syncFromPanel('Fresh')">
-            </div>
-            <div class="sync-cell">
-                <label>Cab</label>
-                <input type="number" id="syncCab" min="0" step="any" oninput="syncFromPanel('Cab')">
-            </div>
-            <div class="sync-cell">
-                <label>BO</label>
-                <input type="number" id="syncBo" min="0" step="any" oninput="syncFromPanel('Bo')">
-            </div>
-            <div class="btn-container">
-                <button id="installBtn" class="action-btn install-btn" onclick="installApp()">INSTALL</button>
-                <button class="action-btn clear-btn" onclick="clearMainInputs()">CLEAR</button>
-            </div>
-        </div>
-    </div>
+        <div class="sync-panel">
+            <div class="sync-cell">
+                <label>Dry</label>
+                <input type="number" id="syncDry" min="0" step="any" oninput="syncFromPanel('Dry')">
+            </div>
+            <div class="sync-cell">
+                <label>Fresh</label>
+                <input type="number" id="syncFresh" min="0" step="any" oninput="syncFromPanel('Fresh')">
+            </div>
+            <div class="sync-cell">
+                <label>Cab</label>
+                <input type="number" id="syncCab" min="0" step="any" oninput="syncFromPanel('Cab')">
+            </div>
+            <div class="sync-cell">
+                <label>BO</label>
+                <input type="number" id="syncBo" min="0" step="any" oninput="syncFromPanel('Bo')">
+            </div>
+            <div class="btn-container">
+                <button id="installBtn" class="action-btn install-btn" onclick="installApp()">INSTALL</button>
+                <button class="action-btn clear-btn" onclick="clearMainInputs()">CLEAR</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- SECOND TABLE (9 COLUMNS, 18 ROWS) -->
-    <div class="table-box table-box-2">
-    <table>
-        <colgroup>
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 15%;">
-            <col style="width: 15%;">
-        </colgroup>
-        <thead>
-            <tr>
-                <th id="lockHeader" class="lockable-header" onclick="handleKeyClick()" title="Tap 5 times to Lock/Unlock">🔒</th>
-                <th>Dry</th>
-                <th>Fresh</th>
-                <th>Cab</th>
-                <th>BO</th>
-                <th>Bal</th>
-                <th>Billing</th>
-                <th class="colln-header">Coll'n</th>
-                <th>Utang</th>
-            </tr>
-        </thead>
-        <tbody>
-            <script>
-                for (let i = 1; i <= 16; i++) {
-                    document.write(`
-                        <tr>
-                            <td><input type="text" class="name-input" id="ledgerName_${i}" oninput="updateActiveCustomerName(${i}); saveLedger();" onfocus="loadRowToMain(${i})" readonly style="background-color: #e5e7eb;"></td>
-                            <td><input type="text" class="readonly-col" id="ledgerDry_${i}" readonly onfocus="loadRowToMain(${i})"></td>
-                            <td><input type="text" class="readonly-col" id="ledgerFresh_${i}" readonly onfocus="loadRowToMain(${i})"></td>
-                            <td><input type="text" class="readonly-col" id="ledgerCab_${i}" readonly onfocus="loadRowToMain(${i})"></td>
-                            <td><input type="text" class="readonly-col" id="ledgerBo_${i}" readonly onfocus="loadRowToMain(${i})"></td>
-                            <td><input type="text" class="readonly-col" id="ledgerBal_${i}" readonly onfocus="loadRowToMain(${i})"></td>
-                            <td><input type="text" class="readonly-col amount" id="ledgerBilling_${i}" readonly></td>
-                            <td><input type="text" class="readonly-col colln-input" id="ledgerPay_${i}" readonly onfocus="loadRowToMain(${i})"></td>
-                            <td><input type="text" class="readonly-col amount" id="ledgerRem_${i}" readonly></td>
-                        </tr>
-                    `);
-                }
-            </script>
-            <!-- Row 18: Net Total Row -->
-            <tr>
-                <td class="miki" style="color: #dc2626; font-size: 9px; padding: 0 1px;">NET TOTAL</td>
-                <td class="net-total-red" id="totalDry">0</td>
-                <td class="net-total-red" id="totalFresh">0</td>
-                <td class="net-total-red" id="totalCab">0</td>
-                <td class="net-total-red" id="totalBo">0</td>
-                <td class="net-total-red" id="totalBal">0</td>
-                <td class="net-total-red" id="totalBilling">0</td>
-                <td class="net-total-red" id="totalColln">0</td>
-                <td class="net-total-red" id="totalRem">0</td>
-            </tr>
-        </tbody>
-    </table>
-    </div>
+    <!-- SECOND TABLE (9 COLUMNS, 18 ROWS) -->
+    <div class="table-box table-box-2">
+    <table>
+        <colgroup>
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 10%;">
+            <col style="width: 15%;">
+            <col style="width: 15%;">
+        </colgroup>
+        <thead>
+            <tr>
+                <th id="lockHeader" class="lockable-header" onclick="handleKeyClick()" title="Tap 5 times to Lock/Unlock">🔒</th>
+                <th>Dry</th>
+                <th>Fresh</th>
+                <th>Cab</th>
+                <th>BO</th>
+                <th>Bal</th>
+                <th>Billing</th>
+                <th class="colln-header">Coll'n</th>
+                <th>Utang</th>
+            </tr>
+        </thead>
+        <tbody>
+            <script>
+                for (let i = 1; i <= 16; i++) {
+                    document.write(`
+                        <tr>
+                            <td><input type="text" class="name-input" id="ledgerName_${i}" oninput="updateActiveCustomerName(${i}); saveLedger();" onfocus="loadRowToMain(${i})" readonly style="background-color: #e5e7eb;"></td>
+                            <td><input type="text" class="readonly-col" id="ledgerDry_${i}" readonly onfocus="loadRowToMain(${i})"></td>
+                            <td><input type="text" class="readonly-col" id="ledgerFresh_${i}" readonly onfocus="loadRowToMain(${i})"></td>
+                            <td><input type="text" class="readonly-col" id="ledgerCab_${i}" readonly onfocus="loadRowToMain(${i})"></td>
+                            <td><input type="text" class="readonly-col" id="ledgerBo_${i}" readonly onfocus="loadRowToMain(${i})"></td>
+                            <td><input type="text" class="readonly-col" id="ledgerBal_${i}" readonly onfocus="loadRowToMain(${i})"></td>
+                            <td><input type="text" class="readonly-col amount" id="ledgerBilling_${i}" readonly></td>
+                            <td><input type="text" class="readonly-col colln-input" id="ledgerPay_${i}" readonly onfocus="loadRowToMain(${i})"></td>
+                            <td><input type="text" class="readonly-col amount" id="ledgerRem_${i}" readonly></td>
+                        </tr>
+                    `);
+                }
+            </script>
+            <!-- Row 18: Net Total Row -->
+            <tr>
+                <td class="miki" style="color: #dc2626; font-size: 9px; padding: 0 1px;">NET TOTAL</td>
+                <td class="net-total-red" id="totalDry">0</td>
+                <td class="net-total-red" id="totalFresh">0</td>
+                <td class="net-total-red" id="totalCab">0</td>
+                <td class="net-total-red" id="totalBo">0</td>
+                <td class="net-total-red" id="totalBal">0</td>
+                <td class="net-total-red" id="totalBilling">0</td>
+                <td class="net-total-red" id="totalColln">0</td>
+                <td class="net-total-red" id="totalRem">0</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
 </div>
 
 <script>
 let scrollYPosition = 0;
 
 document.addEventListener('focusin', function(e) {
-    if (e.target.tagName === 'INPUT') {
-        scrollYPosition = window.scrollY;
-        setTimeout(() => {
-            window.scrollTo(0, scrollYPosition);
-        }, 0);
-    }
+    if (e.target.tagName === 'INPUT') {
+        scrollYPosition = window.scrollY;
+        setTimeout(() => {
+            window.scrollTo(0, scrollYPosition);
+        }, 0);
+    }
 }, true);
 
 Element.prototype.scrollIntoView = function() {};
@@ -427,34 +427,34 @@ Element.prototype.scrollIntoView = function() {};
 // PWA Install Prompt Handler
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const installBtn = document.getElementById('installBtn');
-    if (installBtn) {
-        installBtn.style.display = 'block';
-    }
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.getElementById('installBtn');
+    if (installBtn) {
+        installBtn.style.display = 'block';
+    }
 });
 
 function installApp() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-            }
-            deferredPrompt = null;
-            document.getElementById('installBtn').style.display = 'none';
-        });
-    }
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            }
+            deferredPrompt = null;
+            document.getElementById('installBtn').style.display = 'none';
+        });
+    }
 }
 
 // Service Worker Registration for Offline Use
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js?v=1', { scope: './' })
-            .then(reg => console.log('Service Worker Registered!', reg))
-            .catch(err => console.log('Service Worker Registration Failed:', err));
-    });
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js?v=1', { scope: './' })
+            .then(reg => console.log('Service Worker Registered!', reg))
+            .catch(err => console.log('Service Worker Registration Failed:', err));
+    });
 }
 
 let activeRow = 1;
@@ -468,255 +468,255 @@ let priceTapTimer = null;
 let isPriceLocked = true; // Set to locked on default
 
 function handleKeyClick() {
-    tapCount++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => {
-        tapCount = 0;
-    }, 1000);
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => {
+        tapCount = 0;
+    }, 1000);
 
-    if (tapCount >= 5) {
-        tapCount = 0;
-        isLocked = !isLocked;
-        toggleLockState(isLocked);
-    }
+    if (tapCount >= 5) {
+        tapCount = 0;
+        isLocked = !isLocked;
+        toggleLockState(isLocked);
+    }
 }
 
 function toggleLockState(locked) {
-    const header = document.getElementById("lockHeader");
-    header.textContent = locked ? "🔒" : "🔑";
+    const header = document.getElementById("lockHeader");
+    header.textContent = locked ? "🔒" : "🔑";
 
-    const nameInputs = document.querySelectorAll(".name-input");
-    nameInputs.forEach(field => {
-        field.readOnly = locked;
-        field.style.backgroundColor = locked ? "#e5e7eb" : "white";
-    });
+    const nameInputs = document.querySelectorAll(".name-input");
+    nameInputs.forEach(field => {
+        field.readOnly = locked;
+        field.style.backgroundColor = locked ? "#e5e7eb" : "white";
+    });
 }
 
 function handlePriceKeyClick() {
-    priceTapCount++;
-    clearTimeout(priceTapTimer);
-    priceTapTimer = setTimeout(() => {
-        priceTapCount = 0;
-    }, 1000);
+    priceTapCount++;
+    clearTimeout(priceTapTimer);
+    priceTapTimer = setTimeout(() => {
+        priceTapCount = 0;
+    }, 1000);
 
-    if (priceTapCount >= 5) {
-        priceTapCount = 0;
-        isPriceLocked = !isPriceLocked;
-        togglePriceLockState(isPriceLocked);
-    }
+    if (priceTapCount >= 5) {
+        priceTapCount = 0;
+        isPriceLocked = !isPriceLocked;
+        togglePriceLockState(isPriceLocked);
+    }
 }
 
 function togglePriceLockState(locked) {
-    const header = document.getElementById("priceLockHeader");
-    header.textContent = locked ? "Price 🔒" : "Price 🔑";
+    const header = document.getElementById("priceLockHeader");
+    header.textContent = locked ? "Price 🔒" : "Price 🔑";
 
-    const priceInputs = document.querySelectorAll(".price-input");
-    priceInputs.forEach(field => {
-        field.readOnly = locked;
-        field.style.backgroundColor = locked ? "#e5e7eb" : "white";
-    });
+    const priceInputs = document.querySelectorAll(".price-input");
+    priceInputs.forEach(field => {
+        field.readOnly = locked;
+        field.style.backgroundColor = locked ? "#e5e7eb" : "white";
+    });
 }
 
 function getVal(id) {
-    const val = parseFloat(document.getElementById(id).value);
-    return isNaN(val) ? 0 : val;
+    const val = parseFloat(document.getElementById(id).value);
+    return isNaN(val) ? 0 : val;
 }
 
 // FORMAT MONEY: Formats numbers as whole integers without decimals
 function formatMoney(value) {
-    return Math.round(value).toLocaleString("en-US", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
+    return Math.round(value).toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
 }
 
 function updateActiveCustomerName(row) {
-    if (row === activeRow) {
-        const nameVal = document.getElementById(`ledgerName_${row}`).value.trim();
-        const displayBox = document.getElementById("activeCustomerDisplay");
-        displayBox.textContent = nameVal !== "" ? nameVal : `Row ${row}`;
-    }
+    if (row === activeRow) {
+        const nameVal = document.getElementById(`ledgerName_${row}`).value.trim();
+        const displayBox = document.getElementById("activeCustomerDisplay");
+        displayBox.textContent = nameVal !== "" ? nameVal : `Row ${row}`;
+    }
 }
 
 function syncFromPanel(type) {
-    const val = document.getElementById("sync" + type).value;
-    const targetId = type === "Dry" ? "qtyReg" : "qty" + type;
-    document.getElementById(targetId).value = val;
-    calculateMain();
+    const val = document.getElementById("sync" + type).value;
+    const targetId = type === "Dry" ? "qtyReg" : "qty" + type;
+    document.getElementById(targetId).value = val;
+    calculateMain();
 }
 
 function syncFromTable(type) {
-    const targetId = type === "Reg" ? "syncDry" : "sync" + type;
-    const val = document.getElementById("qty" + type).value;
-    const syncInput = document.getElementById(targetId);
-    if (syncInput) {
-        syncInput.value = val;
-    }
-    calculateMain();
+    const targetId = type === "Reg" ? "syncDry" : "sync" + type;
+    const val = document.getElementById("qty" + type).value;
+    const syncInput = document.getElementById(targetId);
+    if (syncInput) {
+        syncInput.value = val;
+    }
+    calculateMain();
 }
 
 function clearMainInputs() {
-    document.getElementById("qtyReg").value = "";
-    document.getElementById("syncDry").value = "";
-    document.getElementById("qtyFresh").value = "";
-    document.getElementById("syncFresh").value = "";
-    document.getElementById("qtyCab").value = "";
-    document.getElementById("syncCab").value = "";
-    document.getElementById("qtyBo").value = "";
-    document.getElementById("syncBo").value = "";
-    document.getElementById("inputBal").value = "";
-    document.getElementById("inputPay").value = "";
-    calculateMain();
+    document.getElementById("qtyReg").value = "";
+    document.getElementById("syncDry").value = "";
+    document.getElementById("qtyFresh").value = "";
+    document.getElementById("syncFresh").value = "";
+    document.getElementById("qtyCab").value = "";
+    document.getElementById("syncCab").value = "";
+    document.getElementById("qtyBo").value = "";
+    document.getElementById("syncBo").value = "";
+    document.getElementById("inputBal").value = "";
+    document.getElementById("inputPay").value = "";
+    calculateMain();
 }
 
 function calculateMain() {
-    const regQty = getVal("qtyReg");
-    const regPrice = getVal("priceReg");
-    const regAmount = Math.round(regQty * regPrice);
+    const regQty = getVal("qtyReg");
+    const regPrice = getVal("priceReg");
+    const regAmount = Math.round(regQty * regPrice);
 
-    const freshQty = getVal("qtyFresh");
-    const freshPrice = getVal("priceFresh");
-    const freshAmount = Math.round(freshQty * freshPrice);
+    const freshQty = getVal("qtyFresh");
+    const freshPrice = getVal("priceFresh");
+    const freshAmount = Math.round(freshQty * freshPrice);
 
-    const cabQty = getVal("qtyCab");
-    const cabPrice = getVal("priceCab");
-    const cabAmount = Math.round(cabQty * cabPrice);
+    const cabQty = getVal("qtyCab");
+    const cabPrice = getVal("priceCab");
+    const cabAmount = Math.round(cabQty * cabPrice);
 
-    const boQty = getVal("qtyBo");
-    const boPrice = getVal("priceBo");
-    const boAmount = Math.round((boQty / 2) * boPrice);
+    const boQty = getVal("qtyBo");
+    const boPrice = getVal("priceBo");
+    const boAmount = Math.round((boQty / 2) * boPrice);
 
-    const balAmount = Math.round(getVal("inputBal"));
-    const payAmount = Math.round(getVal("inputPay"));
+    const balAmount = Math.round(getVal("inputBal"));
+    const payAmount = Math.round(getVal("inputPay"));
 
-    const total = regAmount + freshAmount + cabAmount - boAmount;
-    
-    // Billing (Col 7) = Sales Total + Bal
-    const billingAmount = total + balAmount;
-    
-    // Net Total (Table 1) = Billing - Pay
-    const netTotal = billingAmount - payAmount;
+    const total = regAmount + freshAmount + cabAmount - boAmount;
+    
+    // Billing (Col 7) = Sales Total + Bal
+    const billingAmount = total + balAmount;
+    
+    // Net Total (Table 1) = Billing - Pay
+    const netTotal = billingAmount - payAmount;
 
-    document.getElementById("amountReg").textContent = formatMoney(regAmount);
-    document.getElementById("amountFresh").textContent = formatMoney(freshAmount);
-    document.getElementById("amountCab").textContent = formatMoney(cabAmount);
-    document.getElementById("amountBo").textContent = formatMoney(boAmount);
-    document.getElementById("totalAmount").textContent = formatMoney(total);
-    document.getElementById("netTotalAmount").textContent = formatMoney(netTotal);
+    document.getElementById("amountReg").textContent = formatMoney(regAmount);
+    document.getElementById("amountFresh").textContent = formatMoney(freshAmount);
+    document.getElementById("amountCab").textContent = formatMoney(cabAmount);
+    document.getElementById("amountBo").textContent = formatMoney(boAmount);
+    document.getElementById("totalAmount").textContent = formatMoney(total);
+    document.getElementById("netTotalAmount").textContent = formatMoney(netTotal);
 
-    document.getElementById(`ledgerDry_${activeRow}`).value = document.getElementById("qtyReg").value;
-    document.getElementById(`ledgerFresh_${activeRow}`).value = document.getElementById("qtyFresh").value;
-    document.getElementById(`ledgerCab_${activeRow}`).value = document.getElementById("qtyCab").value;
-    document.getElementById(`ledgerBo_${activeRow}`).value = document.getElementById("qtyBo").value;
-    document.getElementById(`ledgerBal_${activeRow}`).value = document.getElementById("inputBal").value;
-    
-    // Billing (Col 7)
-    document.getElementById(`ledgerBilling_${activeRow}`).value = formatMoney(billingAmount);
+    document.getElementById(`ledgerDry_${activeRow}`).value = document.getElementById("qtyReg").value;
+    document.getElementById(`ledgerFresh_${activeRow}`).value = document.getElementById("qtyFresh").value;
+    document.getElementById(`ledgerCab_${activeRow}`).value = document.getElementById("qtyCab").value;
+    document.getElementById(`ledgerBo_${activeRow}`).value = document.getElementById("qtyBo").value;
+    document.getElementById(`ledgerBal_${activeRow}`).value = document.getElementById("inputBal").value;
+    
+    // Billing (Col 7)
+    document.getElementById(`ledgerBilling_${activeRow}`).value = formatMoney(billingAmount);
 
-    // Coll'n (Col 8)
-    const hasPayEntry = document.getElementById("inputPay").value.trim() !== "";
-    const collnVal = hasPayEntry ? payAmount : billingAmount;
-    document.getElementById(`ledgerPay_${activeRow}`).value = formatMoney(collnVal);
+    // Coll'n (Col 8)
+    const hasPayEntry = document.getElementById("inputPay").value.trim() !== "";
+    const collnVal = hasPayEntry ? payAmount : billingAmount;
+    document.getElementById(`ledgerPay_${activeRow}`).value = formatMoney(collnVal);
 
-    // Utang (Col 9) = Billing - Coll'n
-    const remVal = billingAmount - collnVal;
-    document.getElementById(`ledgerRem_${activeRow}`).value = formatMoney(remVal);
+    // Utang (Col 9) = Billing - Coll'n
+    const remVal = billingAmount - collnVal;
+    document.getElementById(`ledgerRem_${activeRow}`).value = formatMoney(remVal);
 
-    calculateLedgerTotals();
-    saveLedger();
+    calculateLedgerTotals();
+    saveLedger();
 }
 
 function loadRowToMain(row) {
-    activeRow = row;
+    activeRow = row;
 
-    updateActiveCustomerName(row);
+    updateActiveCustomerName(row);
 
-    document.getElementById("qtyReg").value = document.getElementById(`ledgerDry_${row}`).value;
-    document.getElementById("syncDry").value = document.getElementById(`ledgerDry_${row}`).value;
+    document.getElementById("qtyReg").value = document.getElementById(`ledgerDry_${row}`).value;
+    document.getElementById("syncDry").value = document.getElementById(`ledgerDry_${row}`).value;
 
-    document.getElementById("qtyFresh").value = document.getElementById(`ledgerFresh_${row}`).value;
-    document.getElementById("syncFresh").value = document.getElementById(`ledgerFresh_${row}`).value;
+    document.getElementById("qtyFresh").value = document.getElementById(`ledgerFresh_${row}`).value;
+    document.getElementById("syncFresh").value = document.getElementById(`ledgerFresh_${row}`).value;
 
-    document.getElementById("qtyCab").value = document.getElementById(`ledgerCab_${row}`).value;
-    document.getElementById("syncCab").value = document.getElementById(`ledgerCab_${row}`).value;
+    document.getElementById("qtyCab").value = document.getElementById(`ledgerCab_${row}`).value;
+    document.getElementById("syncCab").value = document.getElementById(`ledgerCab_${row}`).value;
 
-    document.getElementById("qtyBo").value = document.getElementById(`ledgerBo_${row}`).value;
-    document.getElementById("syncBo").value = document.getElementById(`ledgerBo_${row}`).value;
+    document.getElementById("qtyBo").value = document.getElementById(`ledgerBo_${row}`).value;
+    document.getElementById("syncBo").value = document.getElementById(`ledgerBo_${row}`).value;
 
-    document.getElementById("inputBal").value = document.getElementById(`ledgerBal_${row}`).value;
-    
-    const rawColln = document.getElementById(`ledgerPay_${row}`).value.replace(/,/g, '');
-    const rawBilling = document.getElementById(`ledgerBilling_${row}`).value.replace(/,/g, '');
-    document.getElementById("inputPay").value = (rawColln !== rawBilling) ? rawColln : "";
+    document.getElementById("inputBal").value = document.getElementById(`ledgerBal_${row}`).value;
+    
+    const rawColln = document.getElementById(`ledgerPay_${row}`).value.replace(/,/g, '');
+    const rawBilling = document.getElementById(`ledgerBilling_${row}`).value.replace(/,/g, '');
+    document.getElementById("inputPay").value = (rawColln !== rawBilling) ? rawColln : "";
 
-    calculateMain();
+    calculateMain();
 }
 
 function calculateLedgerTotals() {
-    let sumDry = 0, sumFresh = 0, sumCab = 0, sumBo = 0;
-    let sumBal = 0, sumBilling = 0, sumColln = 0, sumRem = 0;
+    let sumDry = 0, sumFresh = 0, sumCab = 0, sumBo = 0;
+    let sumBal = 0, sumBilling = 0, sumColln = 0, sumRem = 0;
 
-    for (let i = 1; i <= 16; i++) {
-        sumDry += parseFloat(document.getElementById(`ledgerDry_${i}`).value) || 0;
-        sumFresh += parseFloat(document.getElementById(`ledgerFresh_${i}`).value) || 0;
-        sumCab += parseFloat(document.getElementById(`ledgerCab_${i}`).value) || 0;
-        sumBo += parseFloat(document.getElementById(`ledgerBo_${i}`).value) || 0;
-        sumBal += parseFloat(document.getElementById(`ledgerBal_${i}`).value) || 0;
-        
-        const billStr = document.getElementById(`ledgerBilling_${i}`).value.replace(/,/g, '');
-        sumBilling += parseFloat(billStr) || 0;
+    for (let i = 1; i <= 16; i++) {
+        sumDry += parseFloat(document.getElementById(`ledgerDry_${i}`).value) || 0;
+        sumFresh += parseFloat(document.getElementById(`ledgerFresh_${i}`).value) || 0;
+        sumCab += parseFloat(document.getElementById(`ledgerCab_${i}`).value) || 0;
+        sumBo += parseFloat(document.getElementById(`ledgerBo_${i}`).value) || 0;
+        sumBal += parseFloat(document.getElementById(`ledgerBal_${i}`).value) || 0;
+        
+        const billStr = document.getElementById(`ledgerBilling_${i}`).value.replace(/,/g, '');
+        sumBilling += parseFloat(billStr) || 0;
 
-        const collnStr = document.getElementById(`ledgerPay_${i}`).value.replace(/,/g, '');
-        sumColln += parseFloat(collnStr) || 0;
+        const collnStr = document.getElementById(`ledgerPay_${i}`).value.replace(/,/g, '');
+        sumColln += parseFloat(collnStr) || 0;
 
-        const remStr = document.getElementById(`ledgerRem_${i}`).value.replace(/,/g, '');
-        sumRem += parseFloat(remStr) || 0;
-    }
+        const remStr = document.getElementById(`ledgerRem_${i}`).value.replace(/,/g, '');
+        sumRem += parseFloat(remStr) || 0;
+    }
 
-    document.getElementById("totalDry").textContent = formatMoney(sumDry);
-    document.getElementById("totalFresh").textContent = formatMoney(sumFresh);
-    document.getElementById("totalCab").textContent = formatMoney(sumCab);
-    document.getElementById("totalBo").textContent = sumBo % 1 === 0 ? sumBo : sumBo.toFixed(1);
-    document.getElementById("totalBal").textContent = formatMoney(sumBal);
-    document.getElementById("totalBilling").textContent = formatMoney(sumBilling);
-    document.getElementById("totalColln").textContent = formatMoney(sumColln);
-    document.getElementById("totalRem").textContent = formatMoney(sumRem);
+    document.getElementById("totalDry").textContent = formatMoney(sumDry);
+    document.getElementById("totalFresh").textContent = formatMoney(sumFresh);
+    document.getElementById("totalCab").textContent = formatMoney(sumCab);
+    document.getElementById("totalBo").textContent = sumBo % 1 === 0 ? sumBo : sumBo.toFixed(1);
+    document.getElementById("totalBal").textContent = formatMoney(sumBal);
+    document.getElementById("totalBilling").textContent = formatMoney(sumBilling);
+    document.getElementById("totalColln").textContent = formatMoney(sumColln);
+    document.getElementById("totalRem").textContent = formatMoney(sumRem);
 }
 
 function saveLedger() {
-    const ledgerData = {};
-    for (let i = 1; i <= 16; i++) {
-        ledgerData[`name_${i}`] = document.getElementById(`ledgerName_${i}`).value;
-        ledgerData[`dry_${i}`] = document.getElementById(`ledgerDry_${i}`).value;
-        ledgerData[`fresh_${i}`] = document.getElementById(`ledgerFresh_${i}`).value;
-        ledgerData[`cab_${i}`] = document.getElementById(`ledgerCab_${i}`).value;
-        ledgerData[`bo_${i}`] = document.getElementById(`ledgerBo_${i}`).value;
-        ledgerData[`bal_${i}`] = document.getElementById(`ledgerBal_${i}`).value;
-        ledgerData[`billing_${i}`] = document.getElementById(`ledgerBilling_${i}`).value;
-        ledgerData[`pay_${i}`] = document.getElementById(`ledgerPay_${i}`).value;
-        ledgerData[`rem_${i}`] = document.getElementById(`ledgerRem_${i}`).value;
-    }
-    localStorage.setItem("miki_ledger_data", JSON.stringify(ledgerData));
+    const ledgerData = {};
+    for (let i = 1; i <= 16; i++) {
+        ledgerData[`name_${i}`] = document.getElementById(`ledgerName_${i}`).value;
+        ledgerData[`dry_${i}`] = document.getElementById(`ledgerDry_${i}`).value;
+        ledgerData[`fresh_${i}`] = document.getElementById(`ledgerFresh_${i}`).value;
+        ledgerData[`cab_${i}`] = document.getElementById(`ledgerCab_${i}`).value;
+        ledgerData[`bo_${i}`] = document.getElementById(`ledgerBo_${i}`).value;
+        ledgerData[`bal_${i}`] = document.getElementById(`ledgerBal_${i}`).value;
+        ledgerData[`billing_${i}`] = document.getElementById(`ledgerBilling_${i}`).value;
+        ledgerData[`pay_${i}`] = document.getElementById(`ledgerPay_${i}`).value;
+        ledgerData[`rem_${i}`] = document.getElementById(`ledgerRem_${i}`).value;
+    }
+    localStorage.setItem("miki_ledger_data", JSON.stringify(ledgerData));
 }
 
 function loadLedger() {
-    const saved = localStorage.getItem("miki_ledger_data");
-    if (!saved) return;
-    const ledgerData = JSON.parse(saved);
+    const saved = localStorage.getItem("miki_ledger_data");
+    if (!saved) return;
+    const ledgerData = JSON.parse(saved);
 
-    for (let i = 1; i <= 16; i++) {
-        if(ledgerData[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = ledgerData[`name_${i}`];
-        if(ledgerData[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = ledgerData[`dry_${i}`];
-        if(ledgerData[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = ledgerData[`fresh_${i}`];
-        if(ledgerData[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = ledgerData[`cab_${i}`];
-        if(ledgerData[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = ledgerData[`bo_${i}`];
-        if(ledgerData[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = ledgerData[`bal_${i}`];
-        if(ledgerData[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = ledgerData[`billing_${i}`];
-        if(ledgerData[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = ledgerData[`pay_${i}`];
-        if(ledgerData[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = ledgerData[`rem_${i}`];
-    }
-    loadRowToMain(1);
-    calculateLedgerTotals();
+    for (let i = 1; i <= 16; i++) {
+        if(ledgerData[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = ledgerData[`name_${i}`];
+        if(ledgerData[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = ledgerData[`dry_${i}`];
+        if(ledgerData[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = ledgerData[`fresh_${i}`];
+        if(ledgerData[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = ledgerData[`cab_${i}`];
+        if(ledgerData[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = ledgerData[`bo_${i}`];
+        if(ledgerData[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = ledgerData[`bal_${i}`];
+        if(ledgerData[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = ledgerData[`billing_${i}`];
+        if(ledgerData[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = ledgerData[`pay_${i}`];
+        if(ledgerData[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = ledgerData[`rem_${i}`];
+    }
+    loadRowToMain(1);
+    calculateLedgerTotals();
 }
 
 window.onload = loadLedger;
