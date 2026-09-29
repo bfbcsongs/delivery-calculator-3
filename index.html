@@ -45,8 +45,7 @@ table {
     table-layout: fixed;
 }
 
-th,
-td {
+th, td {
     border: 1px solid #d1d5db;
     height: 26px; 
     padding: 2px 4px;
@@ -101,7 +100,6 @@ table input {
     background: white;
 }
 
-/* TABLE 1 NET TOTAL LARGE FONT SPECIFIC STYLE */
 .miki-net-total-large {
     font-size: 10px !important;
     font-weight: bold;
@@ -116,7 +114,6 @@ table input {
     color: #dc2626;
 }
 
-/* TABLE 2 SPECIFIC STYLES */
 .table-box-2 td {
     padding: 1px 2px;
 }
@@ -137,14 +134,13 @@ table input {
     border: none;
 }
 
-/* HIGHLIGHT STYLES FOR COLL'N COLUMN */
 .colln-header {
-    background: #f59e0b !important; /* Bright amber header */
+    background: #f59e0b !important;
     color: #000000 !important;
 }
 
 .table-box-2 table input.colln-input {
-    background: #fef3c7 !important; /* Light yellow background */
+    background: #fef3c7 !important;
     border: 1px solid #f59e0b !important;
     font-weight: bold;
 }
@@ -230,6 +226,11 @@ table input:focus {
     cursor: pointer;
 }
 
+.save-trigger-btn {
+    background: #10b981;
+}
+.save-trigger-btn:hover { background: #059669; }
+
 .clear-btn {
     background: #ef4444;
 }
@@ -241,20 +242,94 @@ table input:focus {
 }
 .install-btn:hover { background: #1d4ed8; }
 
+/* SAVE MODAL STYLES */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-card {
+    background: white;
+    width: 90%;
+    max-width: 380px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-card h3 {
+    margin-top: 0;
+    color: #111827;
+    font-size: 16px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #374151;
+}
+
+.form-group input {
+    width: 100%;
+    height: 36px;
+    padding: 6px;
+    border: 1px solid #9ca3af;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+    height: 38px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-final-save {
+    background: #9ca3af;
+    color: white;
+    cursor: not-allowed;
+}
+
+.btn-final-save.active {
+    background: #10b981;
+    cursor: pointer;
+}
+
 @media (max-width: 400px) {
-    th, td {
-        height: 24px;
-        padding: 1px;
-    }
-    th {
-        font-size: 9px;
-    }
-    td {
-        font-size: 9.5px;
-    }
-    .table-box-2 table input {
-        font-size: 9.5px;
-    }
+    th, td { height: 24px; padding: 1px; }
+    th { font-size: 9px; }
+    td { font-size: 9.5px; }
+    .table-box-2 table input { font-size: 9.5px; }
 }
 </style>
 </head>
@@ -342,6 +417,7 @@ table input:focus {
                 <input type="number" id="syncBo" min="0" step="any" oninput="syncFromPanel('Bo')">
             </div>
             <div class="btn-container">
+                <button class="action-btn save-trigger-btn" onclick="openSaveModal()">SAVE</button>
                 <button id="installBtn" class="action-btn install-btn" onclick="installApp()">INSTALL</button>
                 <button class="action-btn clear-btn" onclick="clearMainInputs()">CLEAR</button>
             </div>
@@ -380,7 +456,7 @@ table input:focus {
                 for (let i = 1; i <= 16; i++) {
                     document.write(`
                         <tr>
-                            <td><input type="text" class="name-input" id="ledgerName_${i}" oninput="updateActiveCustomerName(${i}); saveLedger();" onfocus="loadRowToMain(${i})" readonly style="background-color: #e5e7eb;"></td>
+                            <td><input type="text" class="name-input" id="ledgerName_${i}" oninput="updateActiveCustomerName(${i}); autoSaveActiveSession();" onfocus="loadRowToMain(${i})" readonly style="background-color: #e5e7eb;"></td>
                             <td><input type="text" class="readonly-col" id="ledgerDry_${i}" readonly onfocus="loadRowToMain(${i})"></td>
                             <td><input type="text" class="readonly-col" id="ledgerFresh_${i}" readonly onfocus="loadRowToMain(${i})"></td>
                             <td><input type="text" class="readonly-col" id="ledgerCab_${i}" readonly onfocus="loadRowToMain(${i})"></td>
@@ -407,6 +483,25 @@ table input:focus {
             </tr>
         </tbody>
     </table>
+    </div>
+</div>
+
+<!-- STEP 2 SAVE MODAL -->
+<div id="saveModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3>Save Daily File</h3>
+        <div class="form-group">
+            <label for="saveDateInput">Select Date:</label>
+            <input type="date" id="saveDateInput" oninput="validateSaveInputs()">
+        </div>
+        <div class="form-group">
+            <label for="saveNameInput">Encoder Name:</label>
+            <input type="text" id="saveNameInput" placeholder="Enter your name" oninput="validateSaveInputs()">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeSaveModal()">Cancel</button>
+            <button id="finalSaveBtn" class="btn-final-save" disabled onclick="executeFinalSave()">Save File</button>
+        </div>
     </div>
 </div>
 
@@ -448,7 +543,7 @@ function installApp() {
     }
 }
 
-// Service Worker Registration for Offline Use
+// Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js?v=1', { scope: './' })
@@ -458,21 +553,18 @@ if ('serviceWorker' in navigator) {
 }
 
 let activeRow = 1;
-
 let tapCount = 0;
 let tapTimer = null;
-let isLocked = true; // Set to locked on default
+let isLocked = true;
 
 let priceTapCount = 0;
 let priceTapTimer = null;
-let isPriceLocked = true; // Set to locked on default
+let isPriceLocked = true;
 
 function handleKeyClick() {
     tapCount++;
     clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => {
-        tapCount = 0;
-    }, 1000);
+    tapTimer = setTimeout(() => { tapCount = 0; }, 1000);
 
     if (tapCount >= 5) {
         tapCount = 0;
@@ -495,9 +587,7 @@ function toggleLockState(locked) {
 function handlePriceKeyClick() {
     priceTapCount++;
     clearTimeout(priceTapTimer);
-    priceTapTimer = setTimeout(() => {
-        priceTapCount = 0;
-    }, 1000);
+    priceTapTimer = setTimeout(() => { priceTapCount = 0; }, 1000);
 
     if (priceTapCount >= 5) {
         priceTapCount = 0;
@@ -522,7 +612,6 @@ function getVal(id) {
     return isNaN(val) ? 0 : val;
 }
 
-// FORMAT MONEY: Formats numbers as whole integers without decimals
 function formatMoney(value) {
     return Math.round(value).toLocaleString("en-US", {
         minimumFractionDigits: 0,
@@ -590,11 +679,7 @@ function calculateMain() {
     const payAmount = Math.round(getVal("inputPay"));
 
     const total = regAmount + freshAmount + cabAmount - boAmount;
-    
-    // Billing (Col 7) = Sales Total + Bal
     const billingAmount = total + balAmount;
-    
-    // Net Total (Table 1) = Billing - Pay
     const netTotal = billingAmount - payAmount;
 
     document.getElementById("amountReg").textContent = formatMoney(regAmount);
@@ -610,25 +695,21 @@ function calculateMain() {
     document.getElementById(`ledgerBo_${activeRow}`).value = document.getElementById("qtyBo").value;
     document.getElementById(`ledgerBal_${activeRow}`).value = document.getElementById("inputBal").value;
     
-    // Billing (Col 7)
     document.getElementById(`ledgerBilling_${activeRow}`).value = formatMoney(billingAmount);
 
-    // Coll'n (Col 8)
     const hasPayEntry = document.getElementById("inputPay").value.trim() !== "";
     const collnVal = hasPayEntry ? payAmount : billingAmount;
     document.getElementById(`ledgerPay_${activeRow}`).value = formatMoney(collnVal);
 
-    // Utang (Col 9) = Billing - Coll'n
     const remVal = billingAmount - collnVal;
     document.getElementById(`ledgerRem_${activeRow}`).value = formatMoney(remVal);
 
     calculateLedgerTotals();
-    saveLedger();
+    autoSaveActiveSession();
 }
 
 function loadRowToMain(row) {
     activeRow = row;
-
     updateActiveCustomerName(row);
 
     document.getElementById("qtyReg").value = document.getElementById(`ledgerDry_${row}`).value;
@@ -683,7 +764,13 @@ function calculateLedgerTotals() {
     document.getElementById("totalRem").textContent = formatMoney(sumRem);
 }
 
-function saveLedger() {
+// ACTIVE WORK SESSION AUTOSAVE
+function autoSaveActiveSession() {
+    const currentData = extractCurrentLedgerData();
+    localStorage.setItem("miki_active_session", JSON.stringify(currentData));
+}
+
+function extractCurrentLedgerData() {
     const ledgerData = {};
     for (let i = 1; i <= 16; i++) {
         ledgerData[`name_${i}`] = document.getElementById(`ledgerName_${i}`).value;
@@ -696,24 +783,117 @@ function saveLedger() {
         ledgerData[`pay_${i}`] = document.getElementById(`ledgerPay_${i}`).value;
         ledgerData[`rem_${i}`] = document.getElementById(`ledgerRem_${i}`).value;
     }
-    localStorage.setItem("miki_ledger_data", JSON.stringify(ledgerData));
+    return ledgerData;
+}
+
+function populateLedgerFields(ledgerData) {
+    for (let i = 1; i <= 16; i++) {
+        if(ledgerData[`name_${i}`] !== undefined) document.getElementById(`ledgerName_${i}`).value = ledgerData[`name_${i}`];
+        if(ledgerData[`dry_${i}`] !== undefined) document.getElementById(`ledgerDry_${i}`).value = ledgerData[`dry_${i}`];
+        if(ledgerData[`fresh_${i}`] !== undefined) document.getElementById(`ledgerFresh_${i}`).value = ledgerData[`fresh_${i}`];
+        if(ledgerData[`cab_${i}`] !== undefined) document.getElementById(`ledgerCab_${i}`).value = ledgerData[`cab_${i}`];
+        if(ledgerData[`bo_${i}`] !== undefined) document.getElementById(`ledgerBo_${i}`).value = ledgerData[`bo_${i}`];
+        if(ledgerData[`bal_${i}`] !== undefined) document.getElementById(`ledgerBal_${i}`).value = ledgerData[`bal_${i}`];
+        if(ledgerData[`billing_${i}`] !== undefined) document.getElementById(`ledgerBilling_${i}`).value = ledgerData[`billing_${i}`];
+        if(ledgerData[`pay_${i}`] !== undefined) document.getElementById(`ledgerPay_${i}`).value = ledgerData[`pay_${i}`];
+        if(ledgerData[`rem_${i}`] !== undefined) document.getElementById(`ledgerRem_${i}`).value = ledgerData[`rem_${i}`];
+    }
+}
+
+// PHASE 1 & 2: MULTI-FILE SAVE & MODAL VALIDATION
+function openSaveModal() {
+    const dateInput = document.getElementById("saveDateInput");
+    const nameInput = document.getElementById("saveNameInput");
+    
+    // Auto-fill today's date
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.value = today;
+    
+    // Retrieve last saved encoder name if available
+    const lastEncoder = localStorage.getItem("miki_last_encoder") || "";
+    nameInput.value = lastEncoder;
+
+    validateSaveInputs();
+    document.getElementById("saveModal").style.display = "flex";
+}
+
+function closeSaveModal() {
+    document.getElementById("saveModal").style.display = "none";
+}
+
+function validateSaveInputs() {
+    const dateVal = document.getElementById("saveDateInput").value;
+    const nameVal = document.getElementById("saveNameInput").value.trim();
+    const btn = document.getElementById("finalSaveBtn");
+
+    if (dateVal !== "" && nameVal !== "") {
+        btn.disabled = false;
+        btn.classList.add("active");
+    } else {
+        btn.disabled = true;
+        btn.classList.remove("active");
+    }
+}
+
+function executeFinalSave() {
+    const selectedDate = document.getElementById("saveDateInput").value;
+    const encoderName = document.getElementById("saveNameInput").value.trim();
+
+    if (!selectedDate || !encoderName) return;
+
+    localStorage.setItem("miki_last_encoder", encoderName);
+
+    // Retrieve saved files list
+    let savedFiles = JSON.parse(localStorage.getItem("miki_saved_files")) || [];
+
+    // Check if entry for selected date already exists
+    const existingIndex = savedFiles.findIndex(file => file.date === selectedDate);
+
+    if (existingIndex !== -1) {
+        // Corrected prompt message
+        const confirmOverwrite = confirm("MAY NAKASAVE NA DITONG FILE BOY, GUSTO MO BANG PALITAN O HINDI?");
+        if (!confirmOverwrite) {
+            return; // Cancel save
+        }
+        // Remove old entry if confirmed
+        savedFiles.splice(existingIndex, 1);
+    }
+
+    // Build file record
+    const newFileRecord = {
+        id: `${selectedDate}_${Date.now()}`,
+        date: selectedDate,
+        savedBy: encoderName,
+        timestamp: Date.now(),
+        synced: false, // For Phase 4 Supabase sync
+        ledgerData: extractCurrentLedgerData()
+    };
+
+    // Add new file record
+    savedFiles.push(newFileRecord);
+
+    // FIFO Rolling Deletion Logic (Keep max 30 records)
+    savedFiles.sort((a, b) => a.timestamp - b.timestamp);
+    while (savedFiles.length > 30) {
+        savedFiles.shift(); // Remove oldest record automatically
+    }
+
+    // Save back to LocalStorage
+    localStorage.setItem("miki_saved_files", JSON.stringify(savedFiles));
+
+    alert("SUCCESS: File successfully saved!");
+    closeSaveModal();
 }
 
 function loadLedger() {
-    const saved = localStorage.getItem("miki_ledger_data");
-    if (!saved) return;
-    const ledgerData = JSON.parse(saved);
-
-    for (let i = 1; i <= 16; i++) {
-        if(ledgerData[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = ledgerData[`name_${i}`];
-        if(ledgerData[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = ledgerData[`dry_${i}`];
-        if(ledgerData[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = ledgerData[`fresh_${i}`];
-        if(ledgerData[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = ledgerData[`cab_${i}`];
-        if(ledgerData[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = ledgerData[`bo_${i}`];
-        if(ledgerData[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = ledgerData[`bal_${i}`];
-        if(ledgerData[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = ledgerData[`billing_${i}`];
-        if(ledgerData[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = ledgerData[`pay_${i}`];
-        if(ledgerData[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = ledgerData[`rem_${i}`];
+    // Load active working session if available
+    const activeSession = localStorage.getItem("miki_active_session");
+    if (activeSession) {
+        populateLedgerFields(JSON.parse(activeSession));
+    } else {
+        // Fallback check for old single-key storage model
+        const legacyData = localStorage.getItem("miki_ledger_data");
+        if (legacyData) populateLedgerFields(JSON.parse(legacyData));
     }
     loadRowToMain(1);
     calculateLedgerTotals();
