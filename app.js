@@ -44,6 +44,18 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+// AUTOMATIC DEVICE IDENTIFIER SYSTEM
+function getOrCreateDeviceId() {
+    let deviceId = localStorage.getItem("miki_device_id");
+    if (!deviceId) {
+        deviceId = "DEV-" + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem("miki_device_id", deviceId);
+    }
+    return deviceId;
+}
+
+const MY_DEVICE_ID = getOrCreateDeviceId();
+
 let activeRow = 1;
 let currentFileOwner = "";
 let isReadOnlyMode = false;
@@ -378,7 +390,7 @@ function setReadOnlyState(readOnly, owner = "") {
 
     const allInputs = document.querySelectorAll("input:not(.price-input):not(.name-input)");
     allInputs.forEach(input => {
-        if (input.id !== "saveFileDate" && input.id !== "saveFileName" && input.id !== "saveSignature") {
+        if (input.id !== "saveFileDate" && input.id !== "saveFileName") {
             input.readOnly = readOnly;
             input.style.backgroundColor = readOnly ? "#f3f4f6" : "white";
         }
@@ -395,14 +407,14 @@ function loadLedger() {
     applyLedgerData(ledgerData);
 }
 
-/* SAVING, FOLDER, DATE, TIME & SIGNATURE MANAGEMENT */
+/* SAVING & AUTOMATIC DEVICE ID PERMISSION MANAGEMENT */
 
 function getSavedFolderFiles() {
     const folder = localStorage.getItem("miki_folder_files");
     return folder ? JSON.parse(folder) : [];
 }
 
-// Sets calendar pop-up default to September 28, 2026 when tapped while blank
+// Opens calendar defaulting to September 28, 2026 when tapped while blank
 function handleDateFocus(input) {
     if (!input.value) {
         input.value = "2026-09-28";
@@ -412,10 +424,7 @@ function handleDateFocus(input) {
 
 function openFolderModal() {
     document.getElementById("saveFileDate").value = "";
-    
-    // Auto-fill last used signature for convenience
-    const lastSig = localStorage.getItem("miki_user_signature") || "";
-    document.getElementById("saveSignature").value = lastSig;
+    document.getElementById("currentDeviceIdDisplay").textContent = MY_DEVICE_ID;
 
     validateSaveForm();
     renderFolderRecords();
@@ -429,10 +438,9 @@ function closeFolderModal() {
 function validateSaveForm() {
     const dateVal = document.getElementById("saveFileDate").value.trim();
     const nameVal = document.getElementById("saveFileName").value.trim();
-    const sigVal = document.getElementById("saveSignature").value.trim();
     const saveBtn = document.getElementById("saveFileBtn");
 
-    if (dateVal !== "" && nameVal !== "" && sigVal !== "") {
+    if (dateVal !== "" && nameVal !== "") {
         saveBtn.classList.add("active");
         saveBtn.disabled = false;
     } else {
@@ -444,24 +452,17 @@ function validateSaveForm() {
 function saveFileRecord() {
     const dateVal = document.getElementById("saveFileDate").value.trim();
     const nameVal = document.getElementById("saveFileName").value.trim();
-    const sigVal = document.getElementById("saveSignature").value.trim();
 
-    if (!dateVal || !nameVal || !sigVal) return;
-
-    // Save current signature for future entries
-    localStorage.setItem("miki_user_signature", sigVal);
+    if (!dateVal || !nameVal) return;
 
     let files = getSavedFolderFiles();
     const existingIndex = files.findIndex(f => f.date === dateVal);
-    
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     // Check ownership if overwriting
     if (existingIndex >= 0) {
-        const existingOwner = files[existingIndex].signature || "";
-        if (existingOwner.toLowerCase() !== sigVal.toLowerCase()) {
-            alert(`Permission Denied: File for ${dateVal} was saved by "${existingOwner}". Only they can edit/overwrite it.`);
+        const existingOwner = files[existingIndex].ownerDeviceId || "";
+        if (existingOwner !== MY_DEVICE_ID) {
+            alert(`Permission Denied: File for ${dateVal} was saved by Device [${existingOwner}]. Only that device can overwrite it.`);
             return;
         }
         if (!confirm(`Overwrite record for ${dateVal}?`)) {
@@ -472,9 +473,8 @@ function saveFileRecord() {
     const newRecord = {
         id: existingIndex >= 0 ? files[existingIndex].id : Date.now(),
         date: dateVal,
-        time: timeStr,
         name: nameVal,
-        signature: sigVal,
+        ownerDeviceId: MY_DEVICE_ID,
         data: getCurrentLedgerSnapshot()
     };
 
@@ -494,10 +494,10 @@ function saveFileRecord() {
 
     localStorage.setItem("miki_folder_files", JSON.stringify(files));
     
-    currentFileOwner = sigVal;
+    currentFileOwner = MY_DEVICE_ID;
     setReadOnlyState(false);
     
-    alert(`File "${nameVal}" successfully saved by ${sigVal}!`);
+    alert(`File "${nameVal}" saved successfully!`);
     renderFolderRecords();
 }
 
@@ -514,15 +514,13 @@ function renderFolderRecords() {
         return;
     }
 
-    const currentSig = (localStorage.getItem("miki_user_signature") || "").toLowerCase();
-
     files.forEach(file => {
-        const isOwner = (file.signature || "").toLowerCase() === currentSig;
+        const isOwner = file.ownerDeviceId === MY_DEVICE_ID;
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><strong>${file.date}</strong></td>
             <td style="text-align:left;">${file.name}</td>
-            <td>✍️ ${file.signature || "Unknown"}</td>
+            <td>📱 ${file.ownerDeviceId || "Unknown"}</td>
             <td>
                 <button class="load-file-btn" onclick="loadSavedFile(${file.id})">LOAD</button>
                 ${isOwner ? `<button class="del-file-btn" onclick="deleteSavedFile(${file.id})">DEL</button>` : ''}
@@ -537,23 +535,18 @@ function loadSavedFile(id) {
     const target = files.find(f => f.id === id);
     if (!target) return;
 
-    const currentSig = prompt("Enter your Signature/Name to access this ledger:", localStorage.getItem("miki_user_signature") || "");
-    if (currentSig === null) return; // User canceled
-
-    localStorage.setItem("miki_user_signature", currentSig);
-
-    const isOwner = (target.signature || "").toLowerCase() === currentSig.trim().toLowerCase();
+    const isOwner = target.ownerDeviceId === MY_DEVICE_ID;
 
     applyLedgerData(target.data);
 
     if (isOwner) {
         setReadOnlyState(false);
-        currentFileOwner = target.signature;
+        currentFileOwner = target.ownerDeviceId;
         saveLedger();
-        alert(`Loaded "${target.name}". Edit mode active (Owner: ${target.signature}).`);
+        alert(`Loaded "${target.name}". Editable mode enabled.`);
     } else {
-        setReadOnlyState(true, target.signature);
-        alert(`Loaded "${target.name}" in READ-ONLY mode. Only ${target.signature} can edit this ledger.`);
+        setReadOnlyState(true, target.ownerDeviceId);
+        alert(`Loaded "${target.name}" in READ-ONLY mode. Only Device [${target.ownerDeviceId}] can edit this file.`);
     }
 
     closeFolderModal();
@@ -562,11 +555,10 @@ function loadSavedFile(id) {
 function deleteSavedFile(id) {
     let files = getSavedFolderFiles();
     const target = files.find(f => f.id === id);
-    const currentSig = (localStorage.getItem("miki_user_signature") || "").toLowerCase();
 
     if (target) {
-        if ((target.signature || "").toLowerCase() !== currentSig) {
-            alert(`Permission Denied: Only ${target.signature} can delete this file.`);
+        if (target.ownerDeviceId !== MY_DEVICE_ID) {
+            alert(`Permission Denied: Only Device [${target.ownerDeviceId}] can delete this file.`);
             return;
         }
 
