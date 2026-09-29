@@ -237,6 +237,19 @@ table input:focus {
 }
 .install-btn:hover { background: #1d4ed8; }
 
+.read-only-banner {
+    display: none;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
 /* MODAL / FOLDER / SAVE OVERLAY STYLES */
 .modal-overlay {
     display: none;
@@ -392,6 +405,10 @@ table input:focus {
 <body>
 
 <div class="main-wrapper">
+    <div id="readOnlyBanner" class="read-only-banner">
+        🔒 READ-ONLY MODE: Saved by <span id="savedOwnerDisplay"></span>. Editing disabled.
+    </div>
+
     <!-- FIRST TABLE -->
     <div class="table-box">
     <table>
@@ -507,7 +524,7 @@ table input:focus {
             </tr>
         </thead>
         <tbody id="ledgerTableBody">
-            <!-- Dynamic Rows Generated via JS -->
+            <!-- Dynamic Rows -->
         </tbody>
     </table>
     </div>
@@ -525,11 +542,15 @@ table input:focus {
         <div class="save-form-box">
             <div class="form-group">
                 <label for="saveFileDate">Date (1 File per Date):</label>
-                <input type="date" id="saveFileDate" oninput="validateSaveForm()">
+                <input type="date" id="saveFileDate" onfocus="handleDateFocus(this)" oninput="validateSaveForm()">
             </div>
             <div class="form-group">
                 <label for="saveFileName">File / Route / Batch Name:</label>
                 <input type="text" id="saveFileName" placeholder="e.g., Route A Ledger" oninput="validateSaveForm()">
+            </div>
+            <div class="form-group">
+                <label for="saveSignature">Saved By (Signature/Name):</label>
+                <input type="text" id="saveSignature" placeholder="e.g., Juan Dela Cruz" oninput="validateSaveForm()">
             </div>
             <button id="saveFileBtn" class="save-file-btn" onclick="saveFileRecord()" disabled>SAVE FILE</button>
         </div>
@@ -540,8 +561,8 @@ table input:focus {
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Timestamp</th>
                         <th>Name</th>
+                        <th>Saved By</th>
                         <th>Action</th>
                     </tr>
                 </thead>
