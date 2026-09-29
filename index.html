@@ -242,6 +242,48 @@ table input:focus {
 }
 .install-btn:hover { background: #1d4ed8; }
 
+/* FILE MANAGER TABLE STYLES */
+.file-list-header {
+    background: #1f2937;
+    color: white;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.files-table tr {
+    cursor: pointer;
+}
+
+.files-table tr:hover td {
+    background: #f3f4f6;
+}
+
+.files-table tr.active-file td {
+    background: #dbeafe !important;
+    font-weight: bold;
+}
+
+.sort-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sort-header:hover {
+    background: #374151;
+}
+
+.file-info-bar {
+    background: #e0f2fe;
+    border: 1px solid #7dd3fc;
+    color: #0369a1;
+    padding: 8px 12px;
+    font-size: 12px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
 /* SAVE MODAL STYLES */
 .modal-overlay {
     display: none;
@@ -337,6 +379,12 @@ table input:focus {
 <body>
 
 <div class="main-wrapper">
+
+    <!-- ACTIVE FILE METADATA DISPLAY BAR -->
+    <div id="activeFileInfo" class="file-info-bar">
+        Active File: <span id="infoFileName">Unsaved Working Session</span> | Date: <span id="infoFileDate">N/A</span> | Last Edited/Saved: <span id="infoFileTime">N/A</span>
+    </div>
+
     <!-- FIRST TABLE -->
     <div class="table-box">
     <table>
@@ -484,6 +532,25 @@ table input:focus {
         </tbody>
     </table>
     </div>
+
+    <!-- THIRD TABLE: SAVED FILES SELECTOR TABLE -->
+    <div class="table-box">
+        <div class="file-list-header">SAVED FILE SELECTOR</div>
+        <table class="files-table">
+            <thead>
+                <tr>
+                    <th id="fileDateSortHeader" class="sort-header" onclick="toggleSortDirection()" title="Click to sort Ascending/Descending">
+                        Date <span id="sortArrow">▼</span>
+                    </th>
+                    <th>Saved By</th>
+                    <th>Time of Save / Edit</th>
+                </tr>
+            </thead>
+            <tbody id="filesTableBody">
+                <!-- Dynamically populated by JS -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- STEP 2 SAVE MODAL -->
@@ -507,6 +574,8 @@ table input:focus {
 
 <script>
 let scrollYPosition = 0;
+let fileSortDesc = true; // Default latest first
+let currentSelectedFileId = null;
 
 document.addEventListener('focusin', function(e) {
     if (e.target.tagName === 'INPUT') {
@@ -768,6 +837,11 @@ function calculateLedgerTotals() {
 function autoSaveActiveSession() {
     const currentData = extractCurrentLedgerData();
     localStorage.setItem("miki_active_session", JSON.stringify(currentData));
+    
+    // Update timestamp on screen if working with a loaded file
+    if(currentSelectedFileId) {
+        document.getElementById("infoFileTime").textContent = new Date().toLocaleString() + " (Unsaved Changes)";
+    }
 }
 
 function extractCurrentLedgerData() {
@@ -788,26 +862,25 @@ function extractCurrentLedgerData() {
 
 function populateLedgerFields(ledgerData) {
     for (let i = 1; i <= 16; i++) {
-        if(ledgerData[`name_${i}`] !== undefined) document.getElementById(`ledgerName_${i}`).value = ledgerData[`name_${i}`];
-        if(ledgerData[`dry_${i}`] !== undefined) document.getElementById(`ledgerDry_${i}`).value = ledgerData[`dry_${i}`];
-        if(ledgerData[`fresh_${i}`] !== undefined) document.getElementById(`ledgerFresh_${i}`).value = ledgerData[`fresh_${i}`];
-        if(ledgerData[`cab_${i}`] !== undefined) document.getElementById(`ledgerCab_${i}`).value = ledgerData[`cab_${i}`];
-        if(ledgerData[`bo_${i}`] !== undefined) document.getElementById(`ledgerBo_${i}`).value = ledgerData[`bo_${i}`];
-        if(ledgerData[`bal_${i}`] !== undefined) document.getElementById(`ledgerBal_${i}`).value = ledgerData[`bal_${i}`];
-        if(ledgerData[`billing_${i}`] !== undefined) document.getElementById(`ledgerBilling_${i}`).value = ledgerData[`billing_${i}`];
-        if(ledgerData[`pay_${i}`] !== undefined) document.getElementById(`ledgerPay_${i}`).value = ledgerData[`pay_${i}`];
-        if(ledgerData[`rem_${i}`] !== undefined) document.getElementById(`ledgerRem_${i}`).value = ledgerData[`rem_${i}`];
+        document.getElementById(`ledgerName_${i}`).value = ledgerData[`name_${i}`] !== undefined ? ledgerData[`name_${i}`] : "";
+        document.getElementById(`ledgerDry_${i}`).value = ledgerData[`dry_${i}`] !== undefined ? ledgerData[`dry_${i}`] : "";
+        document.getElementById(`ledgerFresh_${i}`).value = ledgerData[`fresh_${i}`] !== undefined ? ledgerData[`fresh_${i}`] : "";
+        document.getElementById(`ledgerCab_${i}`).value = ledgerData[`cab_${i}`] !== undefined ? ledgerData[`cab_${i}`] : "";
+        document.getElementById(`ledgerBo_${i}`).value = ledgerData[`bo_${i}`] !== undefined ? ledgerData[`bo_${i}`] : "";
+        document.getElementById(`ledgerBal_${i}`).value = ledgerData[`bal_${i}`] !== undefined ? ledgerData[`bal_${i}`] : "";
+        document.getElementById(`ledgerBilling_${i}`).value = ledgerData[`billing_${i}`] !== undefined ? ledgerData[`billing_${i}`] : "";
+        document.getElementById(`ledgerPay_${i}`).value = ledgerData[`pay_${i}`] !== undefined ? ledgerData[`pay_${i}`] : "";
+        document.getElementById(`ledgerRem_${i}`).value = ledgerData[`rem_${i}`] !== undefined ? ledgerData[`rem_${i}`] : "";
     }
 }
 
-// PHASE 1 & 2: MULTI-FILE SAVE & MODAL VALIDATION
+// MULTI-FILE SAVE & MODAL VALIDATION
 function openSaveModal() {
     const dateInput = document.getElementById("saveDateInput");
     const nameInput = document.getElementById("saveNameInput");
     
-    // Auto-fill today's date
-    const today = new Date().toISOString().split('T')[0];
-    dateInput.value = today;
+    // Default date explicitly set to January 1, 2026
+    dateInput.value = "2026-01-01";
     
     // Retrieve last saved encoder name if available
     const lastEncoder = localStorage.getItem("miki_last_encoder") || "";
@@ -843,55 +916,118 @@ function executeFinalSave() {
 
     localStorage.setItem("miki_last_encoder", encoderName);
 
-    // Retrieve saved files list
     let savedFiles = JSON.parse(localStorage.getItem("miki_saved_files")) || [];
-
-    // Check if entry for selected date already exists
     const existingIndex = savedFiles.findIndex(file => file.date === selectedDate);
 
     if (existingIndex !== -1) {
-        // Corrected prompt message
         const confirmOverwrite = confirm("MAY NAKASAVE NA DITONG FILE BOY, GUSTO MO BANG PALITAN O HINDI?");
         if (!confirmOverwrite) {
-            return; // Cancel save
+            return;
         }
-        // Remove old entry if confirmed
         savedFiles.splice(existingIndex, 1);
     }
 
-    // Build file record
+    const saveTime = Date.now();
+    const fileId = `${selectedDate}_${saveTime}`;
+
     const newFileRecord = {
-        id: `${selectedDate}_${Date.now()}`,
+        id: fileId,
         date: selectedDate,
         savedBy: encoderName,
-        timestamp: Date.now(),
-        synced: false, // For Phase 4 Supabase sync
+        timestamp: saveTime,
+        synced: false,
         ledgerData: extractCurrentLedgerData()
     };
 
-    // Add new file record
     savedFiles.push(newFileRecord);
 
-    // FIFO Rolling Deletion Logic (Keep max 30 records)
+    // Keep up to 30 records maximum
     savedFiles.sort((a, b) => a.timestamp - b.timestamp);
     while (savedFiles.length > 30) {
-        savedFiles.shift(); // Remove oldest record automatically
+        savedFiles.shift();
     }
 
-    // Save back to LocalStorage
     localStorage.setItem("miki_saved_files", JSON.stringify(savedFiles));
 
     alert("SUCCESS: File successfully saved!");
     closeSaveModal();
+    
+    // Refresh Table & Load Saved File Information
+    renderFilesTable();
+    loadFileContent(fileId);
+}
+
+// FILE SELECTOR TABLE AND SORTING
+function toggleSortDirection() {
+    fileSortDesc = !fileSortDesc;
+    document.getElementById("sortArrow").textContent = fileSortDesc ? "▼" : "▲";
+    renderFilesTable();
+}
+
+function renderFilesTable() {
+    const tbody = document.getElementById("filesTableBody");
+    tbody.innerHTML = "";
+
+    let savedFiles = JSON.parse(localStorage.getItem("miki_saved_files")) || [];
+
+    if (savedFiles.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="font-style: italic; color: #6b7280;">No saved files found.</td></tr>`;
+        return;
+    }
+
+    // Sort by Date (and timestamp)
+    savedFiles.sort((a, b) => {
+        const timeA = new Date(a.date).getTime() || a.timestamp;
+        const timeB = new Date(b.date).getTime() || b.timestamp;
+        return fileSortDesc ? timeB - timeA : timeA - timeB;
+    });
+
+    savedFiles.forEach(file => {
+        const tr = document.createElement("tr");
+        if (file.id === currentSelectedFileId) {
+            tr.classList.add("active-file");
+        }
+        
+        const formattedTime = new Date(file.timestamp).toLocaleString();
+
+        tr.innerHTML = `
+            <td><strong>${file.date}</strong></td>
+            <td>${file.savedBy}</td>
+            <td>${formattedTime}</td>
+        `;
+
+        tr.onclick = () => loadFileContent(file.id);
+        tbody.appendChild(tr);
+    });
+}
+
+function loadFileContent(fileId) {
+    let savedFiles = JSON.parse(localStorage.getItem("miki_saved_files")) || [];
+    const targetFile = savedFiles.find(file => file.id === fileId);
+
+    if (!targetFile) return;
+
+    currentSelectedFileId = fileId;
+    populateLedgerFields(targetFile.ledgerData);
+    loadRowToMain(1);
+    calculateLedgerTotals();
+
+    // Display Active File Details
+    document.getElementById("infoFileName").textContent = targetFile.savedBy;
+    document.getElementById("infoFileDate").textContent = targetFile.date;
+    document.getElementById("infoFileTime").textContent = new Date(targetFile.timestamp).toLocaleString();
+
+    renderFilesTable();
 }
 
 function loadLedger() {
-    // Load active working session if available
+    renderFilesTable();
+    
+    // Load last working session if present
     const activeSession = localStorage.getItem("miki_active_session");
     if (activeSession) {
         populateLedgerFields(JSON.parse(activeSession));
     } else {
-        // Fallback check for old single-key storage model
         const legacyData = localStorage.getItem("miki_ledger_data");
         if (legacyData) populateLedgerFields(JSON.parse(legacyData));
     }
