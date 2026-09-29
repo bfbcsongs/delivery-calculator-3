@@ -390,6 +390,13 @@ table input:focus {
     margin-left: 4px;
 }
 
+.device-id-sub {
+    font-size: 10px;
+    color: #6b7280;
+    margin-top: -8px;
+    margin-bottom: 8px;
+}
+
 @media (max-width: 400px) {
     th, td {
         height: 24px;
@@ -406,7 +413,7 @@ table input:focus {
 
 <div class="main-wrapper">
     <div id="readOnlyBanner" class="read-only-banner">
-        🔒 READ-ONLY MODE: Saved by <span id="savedOwnerDisplay"></span>. Editing disabled.
+        🔒 READ-ONLY MODE: Created by Device [<span id="savedOwnerDisplay"></span>]. Editing disabled.
     </div>
 
     <!-- FIRST TABLE -->
@@ -548,10 +555,7 @@ table input:focus {
                 <label for="saveFileName">File / Route / Batch Name:</label>
                 <input type="text" id="saveFileName" placeholder="e.g., Route A Ledger" oninput="validateSaveForm()">
             </div>
-            <div class="form-group">
-                <label for="saveSignature">Saved By (Signature/Name):</label>
-                <input type="text" id="saveSignature" placeholder="e.g., Juan Dela Cruz" oninput="validateSaveForm()">
-            </div>
+            <div class="device-id-sub">📱 Your ID: <span id="currentDeviceIdDisplay"></span></div>
             <button id="saveFileBtn" class="save-file-btn" onclick="saveFileRecord()" disabled>SAVE FILE</button>
         </div>
 
@@ -562,7 +566,7 @@ table input:focus {
                     <tr>
                         <th>Date</th>
                         <th>Name</th>
-                        <th>Saved By</th>
+                        <th>Saved ID</th>
                         <th>Action</th>
                     </tr>
                 </thead>
