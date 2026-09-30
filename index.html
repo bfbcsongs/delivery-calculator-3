@@ -157,6 +157,13 @@ html, body {
     align-items: center;
     padding: 6px;
     border-bottom: 1px solid #f3f4f6;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.history-item.selected-file {
+    background-color: #fef08a !important;
+    border: 1px solid #facc15;
 }
 
 .history-item:last-child {
@@ -584,17 +591,6 @@ table input:focus {
 </div>
 
 <script>
-let scrollYPosition = 0;
-
-document.addEventListener('focusin', function(e) {
-    if (e.target.tagName === 'INPUT') {
-        scrollYPosition = window.scrollY;
-        setTimeout(() => {
-            window.scrollTo(0, scrollYPosition);
-        }, 0);
-    }
-}, true);
-
 // PWA Install Prompt Handler
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -729,11 +725,6 @@ function handleModalSubmit() {
         document.getElementById("displayFileName").textContent = "--";
         localStorage.removeItem("miki_ledger_data");
         setEncodingEditable(false);
-
-        // Scroll smooth to Saved Files section
-        setTimeout(() => {
-            document.getElementById("savedFilesSection").scrollIntoView({ behavior: 'smooth' });
-        }, 100);
     } else {
         setEncodingEditable(true);
         resetInactivityTimer();
@@ -765,6 +756,7 @@ function resetLedgerState() {
     clearAllLedgerInputs();
     localStorage.removeItem("miki_ledger_data");
     setEncodingEditable(false);
+    renderHistoryUI();
     showOpenModal();
 }
 
@@ -1075,8 +1067,8 @@ function loadHistoryFile(dateKey) {
     calculateLedgerTotals();
     saveLedger();
     
-    // Smooth scroll pataas kapag nag-edit ng file mula sa history
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Highlight the clicked item in list
+    renderHistoryUI(dateKey);
 }
 
 function deleteHistoryFile(dateKey) {
@@ -1088,7 +1080,7 @@ function deleteHistoryFile(dateKey) {
     }
 }
 
-function renderHistoryUI() {
+function renderHistoryUI(selectedDateKey = null) {
     const historyContainer = document.getElementById("historyContainer");
     const historyCount = document.getElementById("historyCount");
     const history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
@@ -1100,10 +1092,13 @@ function renderHistoryUI() {
         return;
     }
 
+    const highlightKey = selectedDateKey || currentSessionDate;
+
     historyContainer.innerHTML = "";
     history.forEach(item => {
         const div = document.createElement("div");
-        div.className = "history-item";
+        const isSelected = item.date === highlightKey;
+        div.className = `history-item ${isSelected ? 'selected-file' : ''}`;
         div.innerHTML = `
             <div>
                 <strong>${item.date}</strong> - ${item.name}
@@ -1155,6 +1150,7 @@ function loadLedger() {
     setEncodingEditable(true);
     loadRowToMain(1);
     calculateLedgerTotals();
+    renderHistoryUI();
     resetInactivityTimer();
 }
 
