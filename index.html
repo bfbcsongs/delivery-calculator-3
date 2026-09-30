@@ -642,6 +642,7 @@ let currentSessionDate = "";
 let currentSessionName = "";
 let modalMode = "OPEN"; // "OPEN" or "SAVE"
 let inactivityTimer = null;
+let isEditingActive = false; // Controls whether encoding inputs are enabled
 const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 Minutes
 
 function resetInactivityTimer() {
@@ -655,6 +656,16 @@ function resetInactivityTimer() {
 ['mousemove', 'keydown', 'touchstart', 'scroll', 'click'].forEach(evt => {
     document.addEventListener(evt, resetInactivityTimer, true);
 });
+
+function setEncodingEditable(editable) {
+    isEditingActive = editable;
+    const inputs = document.querySelectorAll('.main-wrapper input:not(.price-input):not(#modalDateInput):not(#modalNameInput)');
+    inputs.forEach(input => {
+        if (!input.classList.contains('readonly-col')) {
+            input.disabled = !editable;
+        }
+    });
+}
 
 function showOpenModal() {
     modalMode = "OPEN";
@@ -710,11 +721,21 @@ function handleModalSubmit() {
 
     if (modalMode === "SAVE") {
         forceSaveCurrentDay();
-        // Scroll directly to the Saved Files section without re-opening the start modal
+        // Clear screen, set read-only, and clear draft
+        clearAllLedgerInputs();
+        currentSessionDate = "";
+        currentSessionName = "";
+        document.getElementById("displayFileDate").textContent = "Date: --";
+        document.getElementById("displayFileName").textContent = "--";
+        localStorage.removeItem("miki_ledger_data");
+        setEncodingEditable(false);
+
+        // Scroll smooth to Saved Files section
         setTimeout(() => {
             document.getElementById("savedFilesSection").scrollIntoView({ behavior: 'smooth' });
         }, 100);
     } else {
+        setEncodingEditable(true);
         resetInactivityTimer();
     }
 }
@@ -743,6 +764,7 @@ function resetLedgerState() {
 
     clearAllLedgerInputs();
     localStorage.removeItem("miki_ledger_data");
+    setEncodingEditable(false);
     showOpenModal();
 }
 
@@ -914,6 +936,8 @@ function calculateMain() {
 }
 
 function loadRowToMain(row) {
+    if (!isEditingActive) return;
+
     activeRow = row;
     updateActiveCustomerName(row);
 
@@ -971,7 +995,7 @@ function calculateLedgerTotals() {
 
 // CURRENT DAY DRAFT SAVE
 function saveLedger() {
-    if (!currentSessionDate || !currentSessionName) return;
+    if (!currentSessionDate || !currentSessionName || !isEditingActive) return;
 
     const ledgerData = {
         date: currentSessionDate,
@@ -1046,11 +1070,12 @@ function loadHistoryFile(dateKey) {
     }
 
     document.getElementById("setupModal").style.display = "none";
+    setEncodingEditable(true);
     loadRowToMain(1);
     calculateLedgerTotals();
     saveLedger();
     
-    // Scroll smoothly to top when editing a file from history
+    // Smooth scroll pataas kapag nag-edit ng file mula sa history
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1097,12 +1122,14 @@ function loadLedger() {
     const saved = localStorage.getItem("miki_ledger_data");
 
     if (!saved) {
+        setEncodingEditable(false);
         showOpenModal();
         return;
     }
 
     const ledgerData = JSON.parse(saved);
     if (!ledgerData.date || !ledgerData.name) {
+        setEncodingEditable(false);
         showOpenModal();
         return;
     }
@@ -1125,6 +1152,7 @@ function loadLedger() {
     }
 
     document.getElementById("setupModal").style.display = "none";
+    setEncodingEditable(true);
     loadRowToMain(1);
     calculateLedgerTotals();
     resetInactivityTimer();
