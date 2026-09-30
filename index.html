@@ -681,6 +681,7 @@ function closeSetupModal() {
 }
 
 function promptNewFile() {
+    clearAllLedgerInputs();
     document.getElementById("modalDateInput").value = "";
     document.getElementById("modalNameInput").value = "";
     document.getElementById("setupModal").style.display = "flex";
