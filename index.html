@@ -1,586 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-<title>Miki Table & Ledger</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Miki Delivery & Ledger Calculator</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111827">
 
-<!-- PWA Manifest Link -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#111827">
+    <!-- html2canvas Library para sa Screenshot Functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-<!-- html2pdf Library for Client-side PDF Generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-<style>
-* {
-    box-sizing: border-box;
-}
+        html, body {
+            margin: 0;
+            padding: 10px;
+            width: 100%;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+        }
 
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    font-family: Arial, sans-serif;
-    background: #f3f4f6;
-    overscroll-behavior: none;
-    touch-action: pan-x pan-y;
-}
+        .main-container {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+        }
 
-.main-wrapper {
-    padding: 15px 10px;
-    width: 100%;
-    max-width: 650px;
-    margin: 0 auto;
-}
+        /* HEADER INFO BAR (NAME & DATE) */
+        .info-bar {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-bottom: none;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+        }
 
-.table-box {
-    width: 100%;
-    margin: 0 auto 20px auto;
-    background: white;
-    border: 1px solid #d1d5db;
-}
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
+        .info-group label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
 
-th, td {
-    border: 1px solid #d1d5db;
-    height: 26px; 
-    padding: 2px 4px;
-    text-align: center;
-    vertical-align: middle;
-}
+        .info-group input {
+            height: 32px;
+            padding: 4px 8px;
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            background: white;
+        }
 
-th {
-    background: #111827;
-    color: white;
-    font-size: 13px;
-    font-weight: bold;
-}
+        .info-group input:focus {
+            outline: 2px solid #2563eb;
+        }
 
-td {
-    background: white;
-    font-size: 14px;
-}
+        /* ACTION BUTTONS PANEL */
+        .action-panel {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-.miki {
-    text-align: left;
-    padding-left: 12px;
-    font-weight: bold;
-}
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
 
-.label-cell {
-    font-weight: bold;
-    text-align: center;
-}
+        .action-btn {
+            flex: 1;
+            height: 38px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
 
-.active-customer-box {
-    text-align: center;
-    font-weight: bold;
-    color: #1d4ed8;
-    font-size: 15px;
-    background: #eff6ff;
-    padding: 4px;
-    border-radius: 4px;
-    word-break: break-word;
-}
+        .screenshot-btn { background: #8b5cf6; }
+        .screenshot-btn:hover { background: #7c3aed; }
 
-table input {
-    width: 100%;
-    max-width: 100%;
-    height: 22px;
-    padding: 2px;
-    border: 1px solid #9ca3af;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-    background: white;
-}
+        .clear-btn { background: #ef4444; }
+        .clear-btn:hover { background: #dc2626; }
 
-.miki-net-total-large {
-    font-size: 10px !important;
-    font-weight: bold;
-    color: #dc2626;
-    text-align: left;
-    padding-left: 12px;
-}
+        .install-btn { background: #10b981; display: none; }
+        .install-btn:hover { background: #059669; }
 
-.net-total-large {
-    font-size: 25px !important;
-    font-weight: bold;
-    color: #dc2626;
-}
+        /* TABLE STYLING */
+        .table-box {
+            width: 100%;
+            background: white;
+            border: 1px solid #d1d5db;
+        }
 
-.table-box-2 td {
-    padding: 1px 2px;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
 
-.table-box-2 table input {
-    font-size: 11px;
-    height: 24px;
-    padding: 1px 2px;
-}
+        th, td {
+            border: 1px solid #d1d5db;
+            height: 26px; 
+            padding: 1px 2px;
+            text-align: center;
+            vertical-align: middle;
+        }
 
-.table-box-2 table input.name-input {
-    text-align: left;
-    padding-left: 4px;
-}
+        th {
+            background: #111827;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            user-select: none;
+        }
 
-.table-box-2 table input.readonly-col {
-    background: #f9fafb;
-    border: none;
-}
+        th.lockable-header {
+            cursor: pointer;
+        }
 
-.colln-header {
-    background: #f59e0b !important;
-    color: #000000 !important;
-}
+        .colln-header {
+            background: #f59e0b !important;
+            color: #000000 !important;
+        }
 
-.table-box-2 table input.colln-input {
-    background: #fef3c7 !important;
-    border: 1px solid #f59e0b !important;
-    font-weight: bold;
-}
+        td {
+            background: white;
+            font-size: 11px;
+        }
 
-.table-box-2 th, th.lockable-header {
-    font-size: 10px;
-    padding: 2px 1px;
-    cursor: pointer;
-    user-select: none;
-}
+        table input {
+            width: 100%;
+            height: 24px;
+            padding: 1px 2px;
+            border: 1px solid #9ca3af;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 11px;
+            background: white;
+        }
 
-.direct-amount-input {
-    width: 100% !important;
-    height: 24px !important;
-    font-weight: bold;
-}
+        table input.name-input {
+            text-align: left;
+            padding-left: 4px;
+        }
 
-table input:focus {
-    outline: 2px solid #94a3b8;
-}
+        table input.readonly-col {
+            background: #f9fafb;
+            border: none;
+        }
 
-.amount {
-    font-weight: bold;
-}
+        table input.colln-input {
+            background: #fef3c7 !important;
+            border: 1px solid #f59e0b !important;
+            font-weight: bold;
+        }
 
-.net-total-red {
-    font-weight: bold;
-    color: #dc2626;
-    font-size: 10px;
-    padding: 0 1px;
-}
+        table input:focus {
+            outline: 2px solid #94a3b8;
+        }
 
-.sync-panel {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr) 110px;
-    gap: 6px;
-    padding: 10px;
-    background: #111827;
-    border-top: 1px solid #d1d5db;
-    align-items: flex-end;
-}
+        .amount {
+            font-weight: bold;
+        }
 
-.sync-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+        .net-total-red {
+            font-weight: bold;
+            color: #dc2626;
+            font-size: 10px;
+            padding: 0 1px;
+        }
 
-.sync-cell label {
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-}
+        .miki {
+            text-align: left;
+            padding-left: 4px;
+            font-weight: bold;
+        }
 
-.sync-cell input {
-    width: 100%;
-    height: 32px;
-    padding: 4px;
-    border: 1px solid #9ca3af;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-    background: white;
-}
-
-.btn-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.action-btn {
-    width: 100%;
-    height: 32px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.clear-btn { background: #ef4444; }
-.clear-btn:hover { background: #dc2626; }
-
-.folder-btn { background: #059669; }
-.folder-btn:hover { background: #047857; }
-
-.messenger-btn { background: #0084ff; }
-.messenger-btn:hover { background: #006bce; }
-
-.install-btn {
-    background: #2563eb;
-    display: none;
-}
-.install-btn:hover { background: #1d4ed8; }
-
-.read-only-banner {
-    display: none;
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #f87171;
-    padding: 8px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 12px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-}
-
-/* MODAL / FOLDER / SAVE OVERLAY STYLES */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-}
-
-.modal-card {
-    background: white;
-    width: 100%;
-    max-width: 550px;
-    max-height: 90vh;
-    border-radius: 8px;
-    overflow-y: auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    padding: 16px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #111827;
-    padding-bottom: 8px;
-    margin-bottom: 12px;
-}
-
-.modal-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: #111827;
-}
-
-.close-modal-btn {
-    background: #6b7280;
-    color: white;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.save-form-box {
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 16px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 8px;
-}
-
-.form-group label {
-    font-size: 12px;
-    font-weight: bold;
-    color: #374151;
-}
-
-.form-group input {
-    height: 34px;
-    padding: 4px 8px;
-    border: 1px solid #9ca3af;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.save-file-btn {
-    width: 100%;
-    height: 38px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: not-allowed;
-    background: #9ca3af;
-    transition: background-color 0.2s ease;
-}
-
-.save-file-btn.active {
-    background: #16a34a;
-    cursor: pointer;
-}
-
-.folder-table-container {
-    overflow-x: auto;
-}
-
-.folder-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
-}
-
-.folder-table th {
-    background: #374151;
-    color: white;
-    padding: 6px 4px;
-}
-
-.folder-table td {
-    padding: 6px 4px;
-    border: 1px solid #e5e7eb;
-}
-
-.load-file-btn {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 3px 8px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 10px;
-    font-weight: bold;
-}
-
-.del-file-btn {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 3px 6px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 10px;
-    font-weight: bold;
-    margin-left: 4px;
-}
-
-.device-id-sub {
-    font-size: 10px;
-    color: #6b7280;
-    margin-top: -8px;
-    margin-bottom: 8px;
-}
-
-@media (max-width: 400px) {
-    th, td {
-        height: 24px;
-        padding: 1px;
-    }
-    th { font-size: 9px; }
-    td { font-size: 9.5px; }
-    .table-box-2 table input { font-size: 9.5px; }
-}
-</style>
+        @media (max-width: 400px) {
+            th, td {
+                height: 24px;
+                padding: 1px;
+            }
+            th { font-size: 9px; }
+            td { font-size: 9.5px; }
+            table input { font-size: 9.5px; }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="main-wrapper" id="pdfExportArea">
-    <div id="readOnlyBanner" class="read-only-banner">
-        🔒 READ-ONLY MODE: Created by Device [<span id="savedOwnerDisplay"></span>]. Editing disabled.
-    </div>
-
-    <!-- FIRST TABLE -->
-    <div class="table-box">
-    <table>
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th>Qty</th>
-                <th id="priceLockHeader" class="lockable-header" onclick="handlePriceKeyClick()" title="Tap 5 times to Lock/Unlock Prices">Price 🔒</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td class="miki">REG</td>
-            <td><input type="number" id="qtyReg" min="0" step="any" oninput="syncFromTable('Reg')"></td>
-            <td><input type="number" id="priceReg" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountReg"></td>
-        </tr>
-        <tr>
-            <td class="miki">FRESH</td>
-            <td><input type="number" id="qtyFresh" min="0" step="any" oninput="syncFromTable('Fresh')"></td>
-            <td><input type="number" id="priceFresh" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountFresh"></td>
-        </tr>
-        <tr>
-            <td class="miki">CAB</td>
-            <td><input type="number" id="qtyCab" min="0" step="any" oninput="syncFromTable('Cab')"></td>
-            <td><input type="number" id="priceCab" class="price-input" min="0" step="any" value="40" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountCab"></td>
-        </tr>
-        <tr>
-            <td class="miki">BO</td>
-            <td><input type="number" id="qtyBo" min="0" step="any" oninput="syncFromTable('Bo')"></td>
-            <td><input type="number" id="priceBo" class="price-input" min="0" step="any" value="45" oninput="calculateMain()" readonly style="background-color: #e5e7eb;"></td>
-            <td class="amount" id="amountBo"></td>
-        </tr>
-        <tr>
-            <td class="miki">TOTAL</td>
-            <td></td>
-            <td></td>
-            <td class="amount" id="totalAmount"></td>
-        </tr>
-        <tr>
-            <td colspan="2" rowspan="2" id="activeCustomerDisplay" class="active-customer-box">
-                Row 1
-            </td>
-            <td class="label-cell">BAL</td>
-            <td><input type="number" id="inputBal" min="0" step="any" class="direct-amount-input" oninput="calculateMain()"></td>
-        </tr>
-        <tr>
-            <td class="label-cell">PAY</td>
-            <td><input type="number" id="inputPay" min="0" step="any" class="direct-amount-input" oninput="calculateMain()"></td>
-        </tr>
-        <tr>
-            <td class="miki-net-total-large">NET TOTAL</td>
-            <td></td>
-            <td></td>
-            <td class="net-total-large" id="netTotalAmount"></td>
-        </tr>
-        </tbody>
-    </table>
-
-        <div class="sync-panel">
-            <div class="sync-cell">
-                <label>Dry</label>
-                <input type="number" id="syncDry" min="0" step="any" oninput="syncFromPanel('Dry')">
+<div class="main-container">
+    <!-- TARGET AREA FOR SCREENSHOT (NAME, DATE & TABLE) -->
+    <div id="captureArea">
+        <!-- NAME BAR & DATE BAR -->
+        <div class="info-bar">
+            <div class="info-group">
+                <label for="collectorName">Collector / Route Name:</label>
+                <input type="text" id="collectorName" placeholder="e.g. Route A - Juan" oninput="saveHeaderInfo()">
             </div>
-            <div class="sync-cell">
-                <label>Fresh</label>
-                <input type="number" id="syncFresh" min="0" step="any" oninput="syncFromPanel('Fresh')">
-            </div>
-            <div class="sync-cell">
-                <label>Cab</label>
-                <input type="number" id="syncCab" min="0" step="any" oninput="syncFromPanel('Cab')">
-            </div>
-            <div class="sync-cell">
-                <label>BO</label>
-                <input type="number" id="syncBo" min="0" step="any" oninput="syncFromPanel('Bo')">
-            </div>
-            <div class="btn-container">
-                <button class="action-btn folder-btn" onclick="openFolderModal()">FOLDER / SAVE</button>
-                <button id="sendMessengerBtn" class="action-btn messenger-btn" onclick="sendPdfToMessenger()">💬 MESSENGER</button>
-                <button id="installBtn" class="action-btn install-btn" onclick="installApp()">INSTALL</button>
-                <button class="action-btn clear-btn" onclick="clearMainInputs()">CLEAR</button>
+            <div class="info-group">
+                <label for="ledgerDate">Date:</label>
+                <input type="date" id="ledgerDate" oninput="saveHeaderInfo()">
             </div>
         </div>
-    </div>
 
-    <!-- SECOND TABLE (9 COLUMNS, 18 ROWS) -->
-    <div class="table-box table-box-2">
-    <table>
-        <colgroup>
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 10%;">
-            <col style="width: 15%;">
-            <col style="width: 15%;">
-        </colgroup>
-        <thead>
-            <tr>
-                <th id="lockHeader" class="lockable-header" onclick="handleKeyClick()" title="Tap 5 times to Lock/Unlock">🔒</th>
-                <th>Dry</th>
-                <th>Fresh</th>
-                <th>Cab</th>
-                <th>BO</th>
-                <th>Bal</th>
-                <th>Billing</th>
-                <th class="colln-header">Coll'n</th>
-                <th>Utang</th>
-            </tr>
-        </thead>
-        <tbody id="ledgerTableBody">
-            <!-- Dynamic Rows -->
-        </tbody>
-    </table>
-    </div>
-</div>
-
-<!-- MODAL FOR SAVING & ARCHIVE FOLDER -->
-<div id="folderModal" class="modal-overlay">
-    <div class="modal-card">
-        <div class="modal-header">
-            <div class="modal-title">💾 Saved Files Folder (<span id="savedCountDisplay">0</span>/30)</div>
-            <button class="close-modal-btn" onclick="closeFolderModal()">✕</button>
-        </div>
-
-        <!-- SAVE FORM BAR -->
-        <div class="save-form-box">
-            <div class="form-group">
-                <label for="saveFileDate">Date (1 File per Date):</label>
-                <input type="date" id="saveFileDate" onfocus="handleDateFocus(this)" oninput="validateSaveForm()">
-            </div>
-            <div class="form-group">
-                <label for="saveFileName">File / Route / Batch Name:</label>
-                <input type="text" id="saveFileName" placeholder="e.g., Route A Ledger" oninput="validateSaveForm()">
-            </div>
-            <div class="device-id-sub">📱 Your ID: <span id="currentDeviceIdDisplay"></span></div>
-            <button id="saveFileBtn" class="save-file-btn" onclick="saveFileRecord()" disabled>SAVE FILE</button>
-        </div>
-
-        <!-- FOLDER RECORDS TABLE -->
-        <div class="folder-table-container">
-            <table class="folder-table">
+        <!-- TABLE LEDGER -->
+        <div class="table-box">
+            <table>
+                <colgroup>
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Name</th>
-                        <th>Saved ID</th>
-                        <th>Action</th>
+                        <th id="lockHeader" class="lockable-header" onclick="handleKeyClick()" title="Tap 5 times to Lock/Unlock">🔒</th>
+                        <th>Dry</th>
+                        <th>Fresh</th>
+                        <th>Cab</th>
+                        <th>BO</th>
+                        <th>Bal</th>
+                        <th>Billing</th>
+                        <th class="colln-header">Coll'n</th>
+                        <th>Utang</th>
                     </tr>
                 </thead>
-                <tbody id="folderRecordsBody">
-                    <!-- Dynamic Rows Insertion -->
+                <tbody id="ledgerTableBody">
+                    <!-- Dynamic Rows Generated via JS -->
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-panel">
+        <button id="screenshotBtn" class="action-btn screenshot-btn" onclick="takeScreenshot()">📸 TAKE SCREENSHOT & SHARE</button>
+        <div class="btn-row">
+            <button id="installBtn" class="action-btn install-btn" onclick="installApp()">INSTALL APP</button>
+            <button class="action-btn clear-btn" onclick="clearInputs()">CLEAR ALL INPUTS</button>
         </div>
     </div>
 </div>
