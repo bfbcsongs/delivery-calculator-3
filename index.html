@@ -9,6 +9,9 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#111827">
 
+<!-- html2pdf Library for Client-side PDF Generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
 * {
     box-sizing: border-box;
@@ -174,7 +177,7 @@ table input:focus {
 
 .sync-panel {
     display: grid;
-    grid-template-columns: repeat(4, 1fr) 100px;
+    grid-template-columns: repeat(4, 1fr) 110px;
     gap: 6px;
     padding: 10px;
     background: #111827;
@@ -230,6 +233,9 @@ table input:focus {
 
 .folder-btn { background: #059669; }
 .folder-btn:hover { background: #047857; }
+
+.messenger-btn { background: #0084ff; }
+.messenger-btn:hover { background: #006bce; }
 
 .install-btn {
     background: #2563eb;
@@ -411,7 +417,7 @@ table input:focus {
 
 <body>
 
-<div class="main-wrapper">
+<div class="main-wrapper" id="pdfExportArea">
     <div id="readOnlyBanner" class="read-only-banner">
         🔒 READ-ONLY MODE: Created by Device [<span id="savedOwnerDisplay"></span>]. Editing disabled.
     </div>
@@ -497,6 +503,7 @@ table input:focus {
             </div>
             <div class="btn-container">
                 <button class="action-btn folder-btn" onclick="openFolderModal()">FOLDER / SAVE</button>
+                <button id="sendMessengerBtn" class="action-btn messenger-btn" onclick="sendPdfToMessenger()">💬 MESSENGER</button>
                 <button id="installBtn" class="action-btn install-btn" onclick="installApp()">INSTALL</button>
                 <button class="action-btn clear-btn" onclick="clearMainInputs()">CLEAR</button>
             </div>
