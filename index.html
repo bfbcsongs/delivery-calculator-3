@@ -691,6 +691,17 @@ function handleModalSubmit() {
         return;
     }
 
+    if (modalMode === "SAVE") {
+        const history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
+        const isDuplicate = history.some(item => item.date === dateVal && item.date !== currentSessionDate);
+        if (isDuplicate || dateVal === currentSessionDate && history.some(item => item.date === dateVal)) {
+            const confirmOverwrite = confirm(`Warning: A saved file with the date ${dateVal} already exists. Do you want to overwrite/update this file?`);
+            if (!confirmOverwrite) {
+                return;
+            }
+        }
+    }
+
     currentSessionDate = dateVal;
     currentSessionName = nameVal;
 
@@ -712,8 +723,7 @@ function closeSetupModal() {
 }
 
 function promptNewFile() {
-    clearAllLedgerInputs();
-    showOpenModal();
+    resetLedgerState();
 }
 
 function autoSaveAndReset() {
@@ -1014,6 +1024,8 @@ function loadHistoryFile(dateKey) {
 
     if (!selectedFile) return;
 
+    clearAllLedgerInputs();
+
     currentSessionDate = selectedFile.date;
     currentSessionName = selectedFile.name;
 
@@ -1021,15 +1033,15 @@ function loadHistoryFile(dateKey) {
     document.getElementById("displayFileName").textContent = currentSessionName;
 
     for (let i = 1; i <= 16; i++) {
-        if(selectedFile.rows[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = selectedFile.rows[`name_${i}`];
-        if(selectedFile.rows[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = selectedFile.rows[`dry_${i}`];
-        if(selectedFile.rows[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = selectedFile.rows[`fresh_${i}`];
-        if(selectedFile.rows[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = selectedFile.rows[`cab_${i}`];
-        if(selectedFile.rows[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = selectedFile.rows[`bo_${i}`];
-        if(selectedFile.rows[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = selectedFile.rows[`bal_${i}`];
-        if(selectedFile.rows[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = selectedFile.rows[`billing_${i}`];
-        if(selectedFile.rows[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = selectedFile.rows[`pay_${i}`];
-        if(selectedFile.rows[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = selectedFile.rows[`rem_${i}`];
+        if(selectedFile.rows[`name_${i}`] !== undefined) document.getElementById(`ledgerName_${i}`).value = selectedFile.rows[`name_${i}`];
+        if(selectedFile.rows[`dry_${i}`] !== undefined) document.getElementById(`ledgerDry_${i}`).value = selectedFile.rows[`dry_${i}`];
+        if(selectedFile.rows[`fresh_${i}`] !== undefined) document.getElementById(`ledgerFresh_${i}`).value = selectedFile.rows[`fresh_${i}`];
+        if(selectedFile.rows[`cab_${i}`] !== undefined) document.getElementById(`ledgerCab_${i}`).value = selectedFile.rows[`cab_${i}`];
+        if(selectedFile.rows[`bo_${i}`] !== undefined) document.getElementById(`ledgerBo_${i}`).value = selectedFile.rows[`bo_${i}`];
+        if(selectedFile.rows[`bal_${i}`] !== undefined) document.getElementById(`ledgerBal_${i}`).value = selectedFile.rows[`bal_${i}`];
+        if(selectedFile.rows[`billing_${i}`] !== undefined) document.getElementById(`ledgerBilling_${i}`).value = selectedFile.rows[`billing_${i}`];
+        if(selectedFile.rows[`pay_${i}`] !== undefined) document.getElementById(`ledgerPay_${i}`).value = selectedFile.rows[`pay_${i}`];
+        if(selectedFile.rows[`rem_${i}`] !== undefined) document.getElementById(`ledgerRem_${i}`).value = selectedFile.rows[`rem_${i}`];
     }
 
     document.getElementById("setupModal").style.display = "none";
@@ -1097,15 +1109,15 @@ function loadLedger() {
     document.getElementById("displayFileName").textContent = currentSessionName;
 
     for (let i = 1; i <= 16; i++) {
-        if(ledgerData.rows[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = ledgerData.rows[`name_${i}`];
-        if(ledgerData.rows[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = ledgerData.rows[`dry_${i}`];
-        if(ledgerData.rows[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = ledgerData.rows[`fresh_${i}`];
-        if(ledgerData.rows[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = ledgerData.rows[`cab_${i}`];
-        if(ledgerData.rows[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = ledgerData.rows[`bo_${i}`];
-        if(ledgerData.rows[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = ledgerData.rows[`bal_${i}`];
-        if(ledgerData.rows[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = ledgerData.rows[`billing_${i}`];
-        if(ledgerData.rows[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = ledgerData.rows[`pay_${i}`];
-        if(ledgerData.rows[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = ledgerData.rows[`rem_${i}`];
+        if(ledgerData.rows[`name_${i}`] !== undefined) document.getElementById(`ledgerName_${i}`).value = ledgerData.rows[`name_${i}`];
+        if(ledgerData.rows[`dry_${i}`] !== undefined) document.getElementById(`ledgerDry_${i}`).value = ledgerData.rows[`dry_${i}`];
+        if(ledgerData.rows[`fresh_${i}`] !== undefined) document.getElementById(`ledgerFresh_${i}`).value = ledgerData.rows[`fresh_${i}`];
+        if(ledgerData.rows[`cab_${i}`] !== undefined) document.getElementById(`ledgerCab_${i}`).value = ledgerData.rows[`cab_${i}`];
+        if(ledgerData.rows[`bo_${i}`] !== undefined) document.getElementById(`ledgerBo_${i}`).value = ledgerData.rows[`bo_${i}`];
+        if(ledgerData.rows[`bal_${i}`] !== undefined) document.getElementById(`ledgerBal_${i}`).value = ledgerData.rows[`bal_${i}`];
+        if(ledgerData.rows[`billing_${i}`] !== undefined) document.getElementById(`ledgerBilling_${i}`).value = ledgerData.rows[`billing_${i}`];
+        if(ledgerData.rows[`pay_${i}`] !== undefined) document.getElementById(`ledgerPay_${i}`).value = ledgerData.rows[`pay_${i}`];
+        if(ledgerData.rows[`rem_${i}`] !== undefined) document.getElementById(`ledgerRem_${i}`).value = ledgerData.rows[`rem_${i}`];
     }
 
     document.getElementById("setupModal").style.display = "none";
