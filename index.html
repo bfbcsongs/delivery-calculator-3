@@ -396,17 +396,17 @@ table input:focus {
 
 <body>
 
-<!-- NEW FILE SETUP MODAL -->
+<!-- DYNAMIC SETUP / CONFIRMATION MODAL -->
 <div id="setupModal" class="setup-modal-overlay">
     <div class="setup-modal">
         <button class="modal-close-btn" onclick="closeSetupModal()" title="Close">&times;</button>
-        <h3>Start New Ledger File</h3>
-        <p style="font-size: 12px; color: #6b7280;">Please fill out both the Date and Name to unlock encoding.</p>
+        <h3 id="modalTitle">Start New Ledger File</h3>
+        <p id="modalSubtext" style="font-size: 12px; color: #6b7280;">Please fill out both the Date and Name to unlock encoding.</p>
         <label for="modalDateInput">Date</label>
         <input type="date" id="modalDateInput">
         <label for="modalNameInput">Route / Salesman Name</label>
         <input type="text" id="modalNameInput" placeholder="e.g. Route A - John">
-        <button class="setup-btn" onclick="startNewSession()">Open Ledger</button>
+        <button id="modalActionBtn" class="setup-btn" onclick="handleModalSubmit()">Open Ledger</button>
     </div>
 </div>
 
@@ -505,7 +505,7 @@ table input:focus {
             <span id="displayFileName">--</span>
         </div>
         <div>
-            <button class="btn-sm save-btn" onclick="saveAndClearDay()">Save Day</button>
+            <button class="btn-sm save-btn" onclick="openSaveConfirmationModal()">Save Day</button>
             <button class="btn-sm clear-btn" onclick="promptNewFile()">New Day</button>
         </div>
     </div>
@@ -642,6 +642,7 @@ let isPriceLocked = true;
 // SESSION & INACTIVITY TRACKING
 let currentSessionDate = "";
 let currentSessionName = "";
+let modalMode = "OPEN"; // "OPEN" or "SAVE"
 let inactivityTimer = null;
 const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 Minutes
 
@@ -657,12 +658,36 @@ function resetInactivityTimer() {
     document.addEventListener(evt, resetInactivityTimer, true);
 });
 
-function startNewSession() {
+function showOpenModal() {
+    modalMode = "OPEN";
+    document.getElementById("modalTitle").textContent = "Start New Ledger File";
+    document.getElementById("modalSubtext").textContent = "Please fill out both the Date and Name to unlock encoding.";
+    document.getElementById("modalActionBtn").textContent = "Open Ledger";
+    document.getElementById("modalDateInput").value = "";
+    document.getElementById("modalNameInput").value = "";
+    document.getElementById("setupModal").style.display = "flex";
+}
+
+function openSaveConfirmationModal() {
+    if (!currentSessionDate || !currentSessionName) {
+        alert("No active session to save. Please start a session first.");
+        return;
+    }
+    modalMode = "SAVE";
+    document.getElementById("modalTitle").textContent = "Confirm & Save Ledger File";
+    document.getElementById("modalSubtext").textContent = "Review or edit the Date and Name before saving to history.";
+    document.getElementById("modalActionBtn").textContent = "Save File";
+    document.getElementById("modalDateInput").value = currentSessionDate;
+    document.getElementById("modalNameInput").value = currentSessionName;
+    document.getElementById("setupModal").style.display = "flex";
+}
+
+function handleModalSubmit() {
     const dateVal = document.getElementById("modalDateInput").value;
     const nameVal = document.getElementById("modalNameInput").value.trim();
 
     if (!dateVal || !nameVal) {
-        alert("Both Date and Name are required to start a ledger!");
+        alert("Both Date and Name are required!");
         return;
     }
 
@@ -673,7 +698,13 @@ function startNewSession() {
     document.getElementById("displayFileName").textContent = currentSessionName;
 
     document.getElementById("setupModal").style.display = "none";
-    resetInactivityTimer();
+
+    if (modalMode === "SAVE") {
+        forceSaveCurrentDay();
+        resetLedgerState();
+    } else {
+        resetInactivityTimer();
+    }
 }
 
 function closeSetupModal() {
@@ -682,18 +713,7 @@ function closeSetupModal() {
 
 function promptNewFile() {
     clearAllLedgerInputs();
-    document.getElementById("modalDateInput").value = "";
-    document.getElementById("modalNameInput").value = "";
-    document.getElementById("setupModal").style.display = "flex";
-}
-
-function saveAndClearDay() {
-    if (!currentSessionDate || !currentSessionName) {
-        alert("No active session to save. Please enter a Date and Name first.");
-        return;
-    }
-    forceSaveCurrentDay();
-    resetLedgerState();
+    showOpenModal();
 }
 
 function autoSaveAndReset() {
@@ -709,12 +729,10 @@ function resetLedgerState() {
     currentSessionName = "";
     document.getElementById("displayFileDate").textContent = "Date: --";
     document.getElementById("displayFileName").textContent = "--";
-    document.getElementById("modalDateInput").value = "";
-    document.getElementById("modalNameInput").value = "";
 
     clearAllLedgerInputs();
     localStorage.removeItem("miki_ledger_data");
-    document.getElementById("setupModal").style.display = "flex";
+    showOpenModal();
 }
 
 function clearAllLedgerInputs() {
@@ -1063,13 +1081,13 @@ function loadLedger() {
     const saved = localStorage.getItem("miki_ledger_data");
 
     if (!saved) {
-        document.getElementById("setupModal").style.display = "flex";
+        showOpenModal();
         return;
     }
 
     const ledgerData = JSON.parse(saved);
     if (!ledgerData.date || !ledgerData.name) {
-        document.getElementById("setupModal").style.display = "flex";
+        showOpenModal();
         return;
     }
 
