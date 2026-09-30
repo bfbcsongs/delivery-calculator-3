@@ -572,7 +572,7 @@ table input:focus {
     </div>
 
     <!-- 30-DAY HISTORY ARCHIVE -->
-    <div class="history-section">
+    <div class="history-section" id="savedFilesSection">
         <div class="history-title">
             <span>Saved Files (30-Day History)</span>
             <span id="historyCount" style="font-weight: normal; color: #6b7280; font-size: 11px;">0 / 30</span>
@@ -594,8 +594,6 @@ document.addEventListener('focusin', function(e) {
         }, 0);
     }
 }, true);
-
-Element.prototype.scrollIntoView = function() {};
 
 // PWA Install Prompt Handler
 let deferredPrompt;
@@ -694,7 +692,7 @@ function handleModalSubmit() {
     if (modalMode === "SAVE") {
         const history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
         const isDuplicate = history.some(item => item.date === dateVal && item.date !== currentSessionDate);
-        if (isDuplicate || dateVal === currentSessionDate && history.some(item => item.date === dateVal)) {
+        if (isDuplicate || (dateVal === currentSessionDate && history.some(item => item.date === dateVal))) {
             const confirmOverwrite = confirm(`Warning: A saved file with the date ${dateVal} already exists. Do you want to overwrite/update this file?`);
             if (!confirmOverwrite) {
                 return;
@@ -712,7 +710,10 @@ function handleModalSubmit() {
 
     if (modalMode === "SAVE") {
         forceSaveCurrentDay();
-        resetLedgerState();
+        // Scroll directly to the Saved Files section without re-opening the start modal
+        setTimeout(() => {
+            document.getElementById("savedFilesSection").scrollIntoView({ behavior: 'smooth' });
+        }, 100);
     } else {
         resetInactivityTimer();
     }
@@ -1048,6 +1049,9 @@ function loadHistoryFile(dateKey) {
     loadRowToMain(1);
     calculateLedgerTotals();
     saveLedger();
+    
+    // Scroll smoothly to top when editing a file from history
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function deleteHistoryFile(dateKey) {
