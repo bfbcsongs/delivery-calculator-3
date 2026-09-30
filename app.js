@@ -44,7 +44,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// AUTOMATIC DEVICE IDENTIFIER SYSTEM
+// DEVICE IDENTIFIER SYSTEM
 function getOrCreateDeviceId() {
     let deviceId = localStorage.getItem("miki_device_id");
     if (!deviceId) {
@@ -57,7 +57,6 @@ function getOrCreateDeviceId() {
 const MY_DEVICE_ID = getOrCreateDeviceId();
 
 let activeRow = 1;
-let currentFileOwner = "";
 let isReadOnlyMode = false;
 
 let tapCount = 0;
@@ -407,24 +406,24 @@ function loadLedger() {
     applyLedgerData(ledgerData);
 }
 
-/* SAVING & AUTOMATIC DEVICE ID PERMISSION MANAGEMENT */
+/* LOCAL STORAGE ARCHIVE FOLDER SYSTEM */
 
 function getSavedFolderFiles() {
     const folder = localStorage.getItem("miki_folder_files");
     return folder ? JSON.parse(folder) : [];
 }
 
-// Opens calendar defaulting to September 28, 2026 when tapped while blank
 function handleDateFocus(input) {
     if (!input.value) {
-        input.value = "2026-09-28";
+        input.value = "2026-09-30";
         validateSaveForm();
     }
 }
 
 function openFolderModal() {
     document.getElementById("saveFileDate").value = "";
-    document.getElementById("currentDeviceIdDisplay").textContent = MY_DEVICE_ID;
+    const devDisplay = document.getElementById("currentDeviceIdDisplay");
+    if (devDisplay) devDisplay.textContent = MY_DEVICE_ID;
 
     validateSaveForm();
     renderFolderRecords();
@@ -458,11 +457,10 @@ function saveFileRecord() {
     let files = getSavedFolderFiles();
     const existingIndex = files.findIndex(f => f.date === dateVal);
 
-    // Check ownership if overwriting
     if (existingIndex >= 0) {
         const existingOwner = files[existingIndex].ownerDeviceId || "";
         if (existingOwner !== MY_DEVICE_ID) {
-            alert(`Permission Denied: File for ${dateVal} was saved by Device [${existingOwner}]. Only that device can overwrite it.`);
+            alert(`Permission Denied: Saved by Device [${existingOwner}].`);
             return;
         }
         if (!confirm(`Overwrite record for ${dateVal}?`)) {
@@ -484,20 +482,12 @@ function saveFileRecord() {
         files.push(newRecord);
     }
 
-    // Sort files chronologically: First comes first
     files.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Limit archive to 30 files
-    if (files.length > 30) {
-        files = files.slice(files.length - 30);
-    }
-
     localStorage.setItem("miki_folder_files", JSON.stringify(files));
-    
-    currentFileOwner = MY_DEVICE_ID;
     setReadOnlyState(false);
-    
-    alert(`File "${nameVal}" saved successfully!`);
+
+    alert(`File "${nameVal}" successfully saved locally!`);
     renderFolderRecords();
 }
 
@@ -506,7 +496,9 @@ function renderFolderRecords() {
     const tbody = document.getElementById("folderRecordsBody");
     const countDisplay = document.getElementById("savedCountDisplay");
     
-    countDisplay.textContent = files.length;
+    if (countDisplay) countDisplay.textContent = files.length;
+    if (!tbody) return;
+    
     tbody.innerHTML = "";
 
     if (files.length === 0) {
@@ -520,7 +512,7 @@ function renderFolderRecords() {
         row.innerHTML = `
             <td><strong>${file.date}</strong></td>
             <td style="text-align:left;">${file.name}</td>
-            <td>📱 ${file.ownerDeviceId || "Unknown"}</td>
+            <td>📱 ${file.ownerDeviceId || "Local"}</td>
             <td>
                 <button class="load-file-btn" onclick="loadSavedFile(${file.id})">LOAD</button>
                 ${isOwner ? `<button class="del-file-btn" onclick="deleteSavedFile(${file.id})">DEL</button>` : ''}
@@ -536,17 +528,15 @@ function loadSavedFile(id) {
     if (!target) return;
 
     const isOwner = target.ownerDeviceId === MY_DEVICE_ID;
-
     applyLedgerData(target.data);
 
     if (isOwner) {
         setReadOnlyState(false);
-        currentFileOwner = target.ownerDeviceId;
         saveLedger();
         alert(`Loaded "${target.name}". Editable mode enabled.`);
     } else {
         setReadOnlyState(true, target.ownerDeviceId);
-        alert(`Loaded "${target.name}" in READ-ONLY mode. Only Device [${target.ownerDeviceId}] can edit this file.`);
+        alert(`Loaded "${target.name}" in READ-ONLY mode.`);
     }
 
     closeFolderModal();
@@ -558,7 +548,7 @@ function deleteSavedFile(id) {
 
     if (target) {
         if (target.ownerDeviceId !== MY_DEVICE_ID) {
-            alert(`Permission Denied: Only Device [${target.ownerDeviceId}] can delete this file.`);
+            alert(`Permission Denied: Cannot delete file created by Device [${target.ownerDeviceId}].`);
             return;
         }
 
@@ -567,6 +557,50 @@ function deleteSavedFile(id) {
             localStorage.setItem("miki_folder_files", JSON.stringify(files));
             renderFolderRecords();
         }
+    }
+}
+
+/* PDF GENERATION & MESSENGER NATIVE SHARE LOGIC */
+
+async function sendPdfToMessenger() {
+    const activeDate = document.getElementById("saveFileDate")?.value || new Date().toISOString().split('T')[0];
+    const fileName = `Ledger_${activeDate}.pdf`;
+
+    const element = document.getElementById("pdfExportArea") || document.body;
+    const btn = document.getElementById("sendMessengerBtn");
+    
+    if (btn) btn.innerHTML = "⏳ GENERATING...";
+
+    const opt = {
+        margin:       0.2,
+        filename:     fileName,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    try {
+        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+        const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            await navigator.share({
+                files: [pdfFile],
+                title: 'Daily Ledger Report',
+                text: `Narito ang PDF copy ng ledger for ${activeDate}:`
+            });
+        } else {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(pdfBlob);
+            link.download = fileName;
+            link.click();
+            alert("Naisave ang PDF sa Downloads! Pwede mo na itong i-attach sa Messenger chat.");
+        }
+    } catch (err) {
+        console.error("Error generating/sharing PDF:", err);
+        alert("Hindi ma-share ang PDF. Subukan ulit.");
+    } finally {
+        if (btn) btn.innerHTML = "💬 MESSENGER";
     }
 }
 
