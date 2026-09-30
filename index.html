@@ -32,25 +32,27 @@ html, body {
     margin: 0 auto;
 }
 
-/* MODAL / NEW DAY BAR */
+/* SESSION HEADER ABOVE TABLE 2 */
 .session-bar {
     background: #1e293b;
     color: white;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-radius: 4px 4px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
+    border: 1px solid #d1d5db;
+    border-bottom: none;
 }
 
 .session-info {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     font-weight: bold;
 }
 
+/* MODAL STYLES */
 .setup-modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -62,6 +64,7 @@ html, body {
 }
 
 .setup-modal {
+    position: relative;
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -70,9 +73,26 @@ html, body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.modal-close-btn:hover {
+    color: #111827;
+}
+
 .setup-modal h3 {
     margin-top: 0;
     color: #111827;
+    padding-right: 20px;
 }
 
 .setup-modal label {
@@ -159,6 +179,11 @@ html, body {
     margin: 0 auto 20px auto;
     background: white;
     border: 1px solid #d1d5db;
+}
+
+.table-box-2 {
+    margin-top: 0;
+    border-top: none;
 }
 
 table {
@@ -374,6 +399,7 @@ table input:focus {
 <!-- NEW FILE SETUP MODAL -->
 <div id="setupModal" class="setup-modal-overlay">
     <div class="setup-modal">
+        <button class="modal-close-btn" onclick="closeSetupModal()" title="Close">&times;</button>
         <h3>Start New Ledger File</h3>
         <p style="font-size: 12px; color: #6b7280;">Please fill out both the Date and Name to unlock encoding.</p>
         <label for="modalDateInput">Date</label>
@@ -385,19 +411,6 @@ table input:focus {
 </div>
 
 <div class="main-wrapper">
-    <!-- Active File Bar Header -->
-    <div class="session-bar">
-        <div class="session-info">
-            <span id="displayFileDate">Date: --</span>
-            <span>|</span>
-            <span id="displayFileName">Name: --</span>
-        </div>
-        <div>
-            <button class="btn-sm save-btn" onclick="forceSaveCurrentDay()">Save Day</button>
-            <button class="btn-sm clear-btn" onclick="promptNewFile()">New Day</button>
-        </div>
-    </div>
-
     <!-- FIRST TABLE -->
     <div class="table-box">
     <table>
@@ -481,6 +494,19 @@ table input:focus {
                 <button id="installBtn" class="action-btn install-btn" onclick="installApp()">INSTALL</button>
                 <button class="action-btn clear-btn" onclick="clearMainInputs()">CLEAR</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Active File Bar Header Above Table 2 -->
+    <div class="session-bar">
+        <div class="session-info">
+            <span id="displayFileDate">Date: --</span>
+            <span>|</span>
+            <span id="displayFileName">--</span>
+        </div>
+        <div>
+            <button class="btn-sm save-btn" onclick="saveAndClearDay()">Save Day</button>
+            <button class="btn-sm clear-btn" onclick="promptNewFile()">New Day</button>
         </div>
     </div>
 
@@ -644,17 +670,29 @@ function startNewSession() {
     currentSessionName = nameVal;
 
     document.getElementById("displayFileDate").textContent = "Date: " + currentSessionDate;
-    document.getElementById("displayFileName").textContent = "Name: " + currentSessionName;
+    document.getElementById("displayFileName").textContent = currentSessionName;
 
     document.getElementById("setupModal").style.display = "none";
     resetInactivityTimer();
 }
 
+function closeSetupModal() {
+    document.getElementById("setupModal").style.display = "none";
+}
+
 function promptNewFile() {
-    if (confirm("Save current file and start a new day?")) {
-        forceSaveCurrentDay();
-        resetLedgerState();
+    document.getElementById("modalDateInput").value = "";
+    document.getElementById("modalNameInput").value = "";
+    document.getElementById("setupModal").style.display = "flex";
+}
+
+function saveAndClearDay() {
+    if (!currentSessionDate || !currentSessionName) {
+        alert("No active session to save. Please enter a Date and Name first.");
+        return;
     }
+    forceSaveCurrentDay();
+    resetLedgerState();
 }
 
 function autoSaveAndReset() {
@@ -669,7 +707,7 @@ function resetLedgerState() {
     currentSessionDate = "";
     currentSessionName = "";
     document.getElementById("displayFileDate").textContent = "Date: --";
-    document.getElementById("displayFileName").textContent = "Name: --";
+    document.getElementById("displayFileName").textContent = "--";
     document.getElementById("modalDateInput").value = "";
     document.getElementById("modalNameInput").value = "";
 
@@ -936,7 +974,6 @@ function forceSaveCurrentDay() {
 
     let history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
 
-    // Replace if date entry already exists, otherwise prepend
     const existingIndex = history.findIndex(item => item.date === activeDraft.date);
     if (existingIndex !== -1) {
         history[existingIndex] = activeDraft;
@@ -944,7 +981,6 @@ function forceSaveCurrentDay() {
         history.unshift(activeDraft);
     }
 
-    // Keep maximum 30 records
     if (history.length > 30) {
         history = history.slice(0, 30);
     }
@@ -963,7 +999,7 @@ function loadHistoryFile(dateKey) {
     currentSessionName = selectedFile.name;
 
     document.getElementById("displayFileDate").textContent = "Date: " + currentSessionDate;
-    document.getElementById("displayFileName").textContent = "Name: " + currentSessionName;
+    document.getElementById("displayFileName").textContent = currentSessionName;
 
     for (let i = 1; i <= 16; i++) {
         if(selectedFile.rows[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = selectedFile.rows[`name_${i}`];
@@ -1039,7 +1075,7 @@ function loadLedger() {
     currentSessionDate = ledgerData.date;
     currentSessionName = ledgerData.name;
     document.getElementById("displayFileDate").textContent = "Date: " + currentSessionDate;
-    document.getElementById("displayFileName").textContent = "Name: " + currentSessionName;
+    document.getElementById("displayFileName").textContent = currentSessionName;
 
     for (let i = 1; i <= 16; i++) {
         if(ledgerData.rows[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = ledgerData.rows[`name_${i}`];
