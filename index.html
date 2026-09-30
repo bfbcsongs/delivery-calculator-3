@@ -32,6 +32,128 @@ html, body {
     margin: 0 auto;
 }
 
+/* MODAL / NEW DAY BAR */
+.session-bar {
+    background: #1e293b;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.session-info {
+    display: flex;
+    gap: 10px;
+    font-weight: bold;
+}
+
+.setup-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.setup-modal {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.setup-modal h3 {
+    margin-top: 0;
+    color: #111827;
+}
+
+.setup-modal label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+
+.setup-modal input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.setup-btn {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.setup-btn:hover {
+    background: #1d4ed8;
+}
+
+/* HISTORY DRAWER */
+.history-section {
+    background: white;
+    border: 1px solid #d1d5db;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.history-title {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-list {
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 12px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 11px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn-edit { background: #3b82f6; color: white; }
+.btn-del { background: #ef4444; color: white; margin-left: 4px; }
+
 .table-box {
     width: 100%;
     margin: 0 auto 20px auto;
@@ -77,7 +199,6 @@ td {
     text-align: center;
 }
 
-/* Dynamic Active Customer Display Box */
 .active-customer-box {
     text-align: center;
     font-weight: bold;
@@ -101,7 +222,6 @@ table input {
     background: white;
 }
 
-/* TABLE 1 NET TOTAL LARGE FONT SPECIFIC STYLE */
 .miki-net-total-large {
     font-size: 10px !important;
     font-weight: bold;
@@ -116,7 +236,6 @@ table input {
     color: #dc2626;
 }
 
-/* TABLE 2 SPECIFIC STYLES */
 .table-box-2 td {
     padding: 1px 2px;
 }
@@ -137,14 +256,13 @@ table input {
     border: none;
 }
 
-/* HIGHLIGHT STYLES FOR COLL'N COLUMN */
 .colln-header {
-    background: #f59e0b !important; /* Bright amber header */
+    background: #f59e0b !important;
     color: #000000 !important;
 }
 
 .table-box-2 table input.colln-input {
-    background: #fef3c7 !important; /* Light yellow background */
+    background: #fef3c7 !important;
     border: 1px solid #f59e0b !important;
     font-weight: bold;
 }
@@ -230,10 +348,11 @@ table input:focus {
     cursor: pointer;
 }
 
-.clear-btn {
-    background: #ef4444;
-}
+.clear-btn { background: #ef4444; }
 .clear-btn:hover { background: #dc2626; }
+
+.save-btn { background: #10b981; }
+.save-btn:hover { background: #059669; }
 
 .install-btn {
     background: #2563eb;
@@ -242,26 +361,43 @@ table input:focus {
 .install-btn:hover { background: #1d4ed8; }
 
 @media (max-width: 400px) {
-    th, td {
-        height: 24px;
-        padding: 1px;
-    }
-    th {
-        font-size: 9px;
-    }
-    td {
-        font-size: 9.5px;
-    }
-    .table-box-2 table input {
-        font-size: 9.5px;
-    }
+    th, td { height: 24px; padding: 1px; }
+    th { font-size: 9px; }
+    td { font-size: 9.5px; }
+    .table-box-2 table input { font-size: 9.5px; }
 }
 </style>
 </head>
 
 <body>
 
+<!-- NEW FILE SETUP MODAL -->
+<div id="setupModal" class="setup-modal-overlay">
+    <div class="setup-modal">
+        <h3>Start New Ledger File</h3>
+        <p style="font-size: 12px; color: #6b7280;">Please fill out both the Date and Name to unlock encoding.</p>
+        <label for="modalDateInput">Date</label>
+        <input type="date" id="modalDateInput">
+        <label for="modalNameInput">Route / Salesman Name</label>
+        <input type="text" id="modalNameInput" placeholder="e.g. Route A - John">
+        <button class="setup-btn" onclick="startNewSession()">Open Ledger</button>
+    </div>
+</div>
+
 <div class="main-wrapper">
+    <!-- Active File Bar Header -->
+    <div class="session-bar">
+        <div class="session-info">
+            <span id="displayFileDate">Date: --</span>
+            <span>|</span>
+            <span id="displayFileName">Name: --</span>
+        </div>
+        <div>
+            <button class="btn-sm save-btn" onclick="forceSaveCurrentDay()">Save Day</button>
+            <button class="btn-sm clear-btn" onclick="promptNewFile()">New Day</button>
+        </div>
+    </div>
+
     <!-- FIRST TABLE -->
     <div class="table-box">
     <table>
@@ -348,7 +484,7 @@ table input:focus {
         </div>
     </div>
 
-    <!-- SECOND TABLE (9 COLUMNS, 18 ROWS) -->
+    <!-- SECOND TABLE (9 COLUMNS, 16 ROWS) -->
     <div class="table-box table-box-2">
     <table>
         <colgroup>
@@ -408,6 +544,17 @@ table input:focus {
         </tbody>
     </table>
     </div>
+
+    <!-- 30-DAY HISTORY ARCHIVE -->
+    <div class="history-section">
+        <div class="history-title">
+            <span>Saved Files (30-Day History)</span>
+            <span id="historyCount" style="font-weight: normal; color: #6b7280; font-size: 11px;">0 / 30</span>
+        </div>
+        <div class="history-list" id="historyContainer">
+            <p style="color: #9ca3af; text-align: center; margin: 10px 0;">No saved files yet.</p>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -448,7 +595,7 @@ function installApp() {
     }
 }
 
-// Service Worker Registration for Offline Use
+// Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js?v=1', { scope: './' })
@@ -458,14 +605,94 @@ if ('serviceWorker' in navigator) {
 }
 
 let activeRow = 1;
-
 let tapCount = 0;
 let tapTimer = null;
-let isLocked = true; // Set to locked on default
+let isLocked = true;
 
 let priceTapCount = 0;
 let priceTapTimer = null;
-let isPriceLocked = true; // Set to locked on default
+let isPriceLocked = true;
+
+// SESSION & INACTIVITY TRACKING
+let currentSessionDate = "";
+let currentSessionName = "";
+let inactivityTimer = null;
+const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 Minutes
+
+function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+        autoSaveAndReset();
+    }, INACTIVITY_LIMIT_MS);
+}
+
+// Global Activity Listeners for 15-min timer
+['mousemove', 'keydown', 'touchstart', 'scroll', 'click'].forEach(evt => {
+    document.addEventListener(evt, resetInactivityTimer, true);
+});
+
+function startNewSession() {
+    const dateVal = document.getElementById("modalDateInput").value;
+    const nameVal = document.getElementById("modalNameInput").value.trim();
+
+    if (!dateVal || !nameVal) {
+        alert("Both Date and Name are required to start a ledger!");
+        return;
+    }
+
+    currentSessionDate = dateVal;
+    currentSessionName = nameVal;
+
+    document.getElementById("displayFileDate").textContent = "Date: " + currentSessionDate;
+    document.getElementById("displayFileName").textContent = "Name: " + currentSessionName;
+
+    document.getElementById("setupModal").style.display = "none";
+    resetInactivityTimer();
+}
+
+function promptNewFile() {
+    if (confirm("Save current file and start a new day?")) {
+        forceSaveCurrentDay();
+        resetLedgerState();
+    }
+}
+
+function autoSaveAndReset() {
+    if (currentSessionDate && currentSessionName) {
+        forceSaveCurrentDay();
+        alert("System auto-saved due to 15 minutes of inactivity. Ledger refreshed for new day.");
+        resetLedgerState();
+    }
+}
+
+function resetLedgerState() {
+    currentSessionDate = "";
+    currentSessionName = "";
+    document.getElementById("displayFileDate").textContent = "Date: --";
+    document.getElementById("displayFileName").textContent = "Name: --";
+    document.getElementById("modalDateInput").value = "";
+    document.getElementById("modalNameInput").value = "";
+
+    clearAllLedgerInputs();
+    localStorage.removeItem("miki_ledger_data");
+    document.getElementById("setupModal").style.display = "flex";
+}
+
+function clearAllLedgerInputs() {
+    clearMainInputs();
+    for (let i = 1; i <= 16; i++) {
+        document.getElementById(`ledgerName_${i}`).value = "";
+        document.getElementById(`ledgerDry_${i}`).value = "";
+        document.getElementById(`ledgerFresh_${i}`).value = "";
+        document.getElementById(`ledgerCab_${i}`).value = "";
+        document.getElementById(`ledgerBo_${i}`).value = "";
+        document.getElementById(`ledgerBal_${i}`).value = "";
+        document.getElementById(`ledgerBilling_${i}`).value = "";
+        document.getElementById(`ledgerPay_${i}`).value = "";
+        document.getElementById(`ledgerRem_${i}`).value = "";
+    }
+    calculateLedgerTotals();
+}
 
 function handleKeyClick() {
     tapCount++;
@@ -522,7 +749,6 @@ function getVal(id) {
     return isNaN(val) ? 0 : val;
 }
 
-// FORMAT MONEY: Formats numbers as whole integers without decimals
 function formatMoney(value) {
     return Math.round(value).toLocaleString("en-US", {
         minimumFractionDigits: 0,
@@ -590,11 +816,7 @@ function calculateMain() {
     const payAmount = Math.round(getVal("inputPay"));
 
     const total = regAmount + freshAmount + cabAmount - boAmount;
-    
-    // Billing (Col 7) = Sales Total + Bal
     const billingAmount = total + balAmount;
-    
-    // Net Total (Table 1) = Billing - Pay
     const netTotal = billingAmount - payAmount;
 
     document.getElementById("amountReg").textContent = formatMoney(regAmount);
@@ -610,15 +832,12 @@ function calculateMain() {
     document.getElementById(`ledgerBo_${activeRow}`).value = document.getElementById("qtyBo").value;
     document.getElementById(`ledgerBal_${activeRow}`).value = document.getElementById("inputBal").value;
     
-    // Billing (Col 7)
     document.getElementById(`ledgerBilling_${activeRow}`).value = formatMoney(billingAmount);
 
-    // Coll'n (Col 8)
     const hasPayEntry = document.getElementById("inputPay").value.trim() !== "";
     const collnVal = hasPayEntry ? payAmount : billingAmount;
     document.getElementById(`ledgerPay_${activeRow}`).value = formatMoney(collnVal);
 
-    // Utang (Col 9) = Billing - Coll'n
     const remVal = billingAmount - collnVal;
     document.getElementById(`ledgerRem_${activeRow}`).value = formatMoney(remVal);
 
@@ -628,7 +847,6 @@ function calculateMain() {
 
 function loadRowToMain(row) {
     activeRow = row;
-
     updateActiveCustomerName(row);
 
     document.getElementById("qtyReg").value = document.getElementById(`ledgerDry_${row}`).value;
@@ -683,40 +901,162 @@ function calculateLedgerTotals() {
     document.getElementById("totalRem").textContent = formatMoney(sumRem);
 }
 
+// CURRENT DAY DRAFT SAVE
 function saveLedger() {
-    const ledgerData = {};
+    if (!currentSessionDate || !currentSessionName) return;
+
+    const ledgerData = {
+        date: currentSessionDate,
+        name: currentSessionName,
+        rows: {}
+    };
+
     for (let i = 1; i <= 16; i++) {
-        ledgerData[`name_${i}`] = document.getElementById(`ledgerName_${i}`).value;
-        ledgerData[`dry_${i}`] = document.getElementById(`ledgerDry_${i}`).value;
-        ledgerData[`fresh_${i}`] = document.getElementById(`ledgerFresh_${i}`).value;
-        ledgerData[`cab_${i}`] = document.getElementById(`ledgerCab_${i}`).value;
-        ledgerData[`bo_${i}`] = document.getElementById(`ledgerBo_${i}`).value;
-        ledgerData[`bal_${i}`] = document.getElementById(`ledgerBal_${i}`).value;
-        ledgerData[`billing_${i}`] = document.getElementById(`ledgerBilling_${i}`).value;
-        ledgerData[`pay_${i}`] = document.getElementById(`ledgerPay_${i}`).value;
-        ledgerData[`rem_${i}`] = document.getElementById(`ledgerRem_${i}`).value;
+        ledgerData.rows[`name_${i}`] = document.getElementById(`ledgerName_${i}`).value;
+        ledgerData.rows[`dry_${i}`] = document.getElementById(`ledgerDry_${i}`).value;
+        ledgerData.rows[`fresh_${i}`] = document.getElementById(`ledgerFresh_${i}`).value;
+        ledgerData.rows[`cab_${i}`] = document.getElementById(`ledgerCab_${i}`).value;
+        ledgerData.rows[`bo_${i}`] = document.getElementById(`ledgerBo_${i}`).value;
+        ledgerData.rows[`bal_${i}`] = document.getElementById(`ledgerBal_${i}`).value;
+        ledgerData.rows[`billing_${i}`] = document.getElementById(`ledgerBilling_${i}`).value;
+        ledgerData.rows[`pay_${i}`] = document.getElementById(`ledgerPay_${i}`).value;
+        ledgerData.rows[`rem_${i}`] = document.getElementById(`ledgerRem_${i}`).value;
     }
+
     localStorage.setItem("miki_ledger_data", JSON.stringify(ledgerData));
 }
 
-function loadLedger() {
-    const saved = localStorage.getItem("miki_ledger_data");
-    if (!saved) return;
-    const ledgerData = JSON.parse(saved);
+// 30-DAY HISTORY ARCHIVE FUNCTIONS
+function forceSaveCurrentDay() {
+    if (!currentSessionDate || !currentSessionName) return;
+
+    saveLedger();
+    const activeDraft = JSON.parse(localStorage.getItem("miki_ledger_data"));
+    if (!activeDraft) return;
+
+    let history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
+
+    // Replace if date entry already exists, otherwise prepend
+    const existingIndex = history.findIndex(item => item.date === activeDraft.date);
+    if (existingIndex !== -1) {
+        history[existingIndex] = activeDraft;
+    } else {
+        history.unshift(activeDraft);
+    }
+
+    // Keep maximum 30 records
+    if (history.length > 30) {
+        history = history.slice(0, 30);
+    }
+
+    localStorage.setItem("miki_30day_history", JSON.stringify(history));
+    renderHistoryUI();
+}
+
+function loadHistoryFile(dateKey) {
+    const history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
+    const selectedFile = history.find(item => item.date === dateKey);
+
+    if (!selectedFile) return;
+
+    currentSessionDate = selectedFile.date;
+    currentSessionName = selectedFile.name;
+
+    document.getElementById("displayFileDate").textContent = "Date: " + currentSessionDate;
+    document.getElementById("displayFileName").textContent = "Name: " + currentSessionName;
 
     for (let i = 1; i <= 16; i++) {
-        if(ledgerData[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = ledgerData[`name_${i}`];
-        if(ledgerData[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = ledgerData[`dry_${i}`];
-        if(ledgerData[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = ledgerData[`fresh_${i}`];
-        if(ledgerData[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = ledgerData[`cab_${i}`];
-        if(ledgerData[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = ledgerData[`bo_${i}`];
-        if(ledgerData[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = ledgerData[`bal_${i}`];
-        if(ledgerData[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = ledgerData[`billing_${i}`];
-        if(ledgerData[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = ledgerData[`pay_${i}`];
-        if(ledgerData[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = ledgerData[`rem_${i}`];
+        if(selectedFile.rows[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = selectedFile.rows[`name_${i}`];
+        if(selectedFile.rows[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = selectedFile.rows[`dry_${i}`];
+        if(selectedFile.rows[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = selectedFile.rows[`fresh_${i}`];
+        if(selectedFile.rows[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = selectedFile.rows[`cab_${i}`];
+        if(selectedFile.rows[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = selectedFile.rows[`bo_${i}`];
+        if(selectedFile.rows[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = selectedFile.rows[`bal_${i}`];
+        if(selectedFile.rows[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = selectedFile.rows[`billing_${i}`];
+        if(selectedFile.rows[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = selectedFile.rows[`pay_${i}`];
+        if(selectedFile.rows[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = selectedFile.rows[`rem_${i}`];
     }
+
+    document.getElementById("setupModal").style.display = "none";
     loadRowToMain(1);
     calculateLedgerTotals();
+    saveLedger();
+}
+
+function deleteHistoryFile(dateKey) {
+    if (confirm(`Delete file for ${dateKey}?`)) {
+        let history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
+        history = history.filter(item => item.date !== dateKey);
+        localStorage.setItem("miki_30day_history", JSON.stringify(history));
+        renderHistoryUI();
+    }
+}
+
+function renderHistoryUI() {
+    const historyContainer = document.getElementById("historyContainer");
+    const historyCount = document.getElementById("historyCount");
+    const history = JSON.parse(localStorage.getItem("miki_30day_history") || "[]");
+
+    historyCount.textContent = `${history.length} / 30`;
+
+    if (history.length === 0) {
+        historyContainer.innerHTML = `<p style="color: #9ca3af; text-align: center; margin: 10px 0;">No saved files yet.</p>`;
+        return;
+    }
+
+    historyContainer.innerHTML = "";
+    history.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `
+            <div>
+                <strong>${item.date}</strong> - ${item.name}
+            </div>
+            <div>
+                <button class="btn-sm btn-edit" onclick="loadHistoryFile('${item.date}')">Edit</button>
+                <button class="btn-sm btn-del" onclick="deleteHistoryFile('${item.date}')">Del</button>
+            </div>
+        `;
+        historyContainer.appendChild(div);
+    });
+}
+
+function loadLedger() {
+    renderHistoryUI();
+    const saved = localStorage.getItem("miki_ledger_data");
+
+    if (!saved) {
+        document.getElementById("setupModal").style.display = "flex";
+        return;
+    }
+
+    const ledgerData = JSON.parse(saved);
+    if (!ledgerData.date || !ledgerData.name) {
+        document.getElementById("setupModal").style.display = "flex";
+        return;
+    }
+
+    currentSessionDate = ledgerData.date;
+    currentSessionName = ledgerData.name;
+    document.getElementById("displayFileDate").textContent = "Date: " + currentSessionDate;
+    document.getElementById("displayFileName").textContent = "Name: " + currentSessionName;
+
+    for (let i = 1; i <= 16; i++) {
+        if(ledgerData.rows[`name_${i}`]) document.getElementById(`ledgerName_${i}`).value = ledgerData.rows[`name_${i}`];
+        if(ledgerData.rows[`dry_${i}`]) document.getElementById(`ledgerDry_${i}`).value = ledgerData.rows[`dry_${i}`];
+        if(ledgerData.rows[`fresh_${i}`]) document.getElementById(`ledgerFresh_${i}`).value = ledgerData.rows[`fresh_${i}`];
+        if(ledgerData.rows[`cab_${i}`]) document.getElementById(`ledgerCab_${i}`).value = ledgerData.rows[`cab_${i}`];
+        if(ledgerData.rows[`bo_${i}`]) document.getElementById(`ledgerBo_${i}`).value = ledgerData.rows[`bo_${i}`];
+        if(ledgerData.rows[`bal_${i}`]) document.getElementById(`ledgerBal_${i}`).value = ledgerData.rows[`bal_${i}`];
+        if(ledgerData.rows[`billing_${i}`]) document.getElementById(`ledgerBilling_${i}`).value = ledgerData.rows[`billing_${i}`];
+        if(ledgerData.rows[`pay_${i}`]) document.getElementById(`ledgerPay_${i}`).value = ledgerData.rows[`pay_${i}`];
+        if(ledgerData.rows[`rem_${i}`]) document.getElementById(`ledgerRem_${i}`).value = ledgerData.rows[`rem_${i}`];
+    }
+
+    document.getElementById("setupModal").style.display = "none";
+    loadRowToMain(1);
+    calculateLedgerTotals();
+    resetInactivityTimer();
 }
 
 window.onload = loadLedger;
